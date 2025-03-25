@@ -1,0 +1,60 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Angular build outputs
+dist/
+out-tsc/
+.tmp/
+
+# Angular specific files
+.angular/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Logs and debugging
+logs/
+*.log
+debug.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage reports
+coverage/
+
+# Compiled output
+*.js
+*.js.map
+*.d.ts
+
+# Miscellaneous
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Firebase
+.firebase/
+
+# Protractor end-to-end tests
+e2e/*.js
+e2e/*.map
+
+# Cypress
+e2e/cypress/
