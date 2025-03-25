@@ -4,9 +4,6 @@ CREATE DATABASE IF NOT EXISTS ecommerce;
 -- Use the database
 USE ecommerce;
 
--- Drop existing table if it exists
-DROP TABLE IF EXISTS products;
-
 -- Create products table with default timestamps
 CREATE TABLE IF NOT EXISTS products (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -26,54 +23,63 @@ CREATE TABLE IF NOT EXISTS products (
   updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Insert sample products
+-- Insert sample products only if the table is empty
+INSERT INTO products (
+  name, description, price, category, subCategory, imageUrl, 
+  size, color, inStock, featured, rating, numReviews
+)
+SELECT * FROM (
+  SELECT
+    'Classic Fit Dress Shirt' as name,
+    'A comfortable and stylish dress shirt for formal occasions.' as description,
+    49.99 as price,
+    'men' as category,
+    'shirts' as subCategory,
+    'https://images.unsplash.com/photo-1596755094514-f87e34085b2c' as imageUrl,
+    '["S", "M", "L", "XL"]' as size,
+    '["White", "Blue", "Black"]' as color,
+    true as inStock,
+    true as featured,
+    4.5 as rating,
+    28 as numReviews
+  UNION ALL
+  SELECT
+    'Slim Fit Jeans',
+    'Modern slim fit jeans with stretch comfort.',
+    59.99,
+    'men',
+    'pants',
+    'https://images.unsplash.com/photo-1542272604-787c3835535d',
+    '["30", "32", "34", "36"]',
+    '["Blue", "Black", "Gray"]',
+    true,
+    true,
+    4.2,
+    42
+  UNION ALL
+  SELECT
+    'Casual Hooded Sweatshirt',
+    'Comfortable hooded sweatshirt for everyday wear.',
+    39.99,
+    'men',
+    'hoodies',
+    'https://images.unsplash.com/photo-1556821840-3a63f95609a7',
+    '["S", "M", "L", "XL", "XXL"]',
+    '["Gray", "Black", "Navy"]',
+    true,
+    false,
+    4.0,
+    35
+) AS tmp
+WHERE NOT EXISTS (
+    SELECT 1 FROM products
+);
+
+-- Women's clothing
 INSERT INTO products (
   name, description, price, category, subCategory, imageUrl, 
   size, color, inStock, featured, rating, numReviews
 ) VALUES 
-(
-  'Classic Fit Dress Shirt',
-  'A comfortable and stylish dress shirt for formal occasions.',
-  49.99,
-  'men',
-  'shirts',
-  'https://images.unsplash.com/photo-1596755094514-f87e34085b2c',
-  '["S", "M", "L", "XL"]',
-  '["White", "Blue", "Black"]',
-  true,
-  true,
-  4.5,
-  28
-),
-(
-  'Slim Fit Jeans',
-  'Modern slim fit jeans with stretch comfort.',
-  59.99,
-  'men',
-  'pants',
-  'https://images.unsplash.com/photo-1542272604-787c3835535d',
-  '["30", "32", "34", "36"]',
-  '["Blue", "Black", "Gray"]',
-  true,
-  true,
-  4.2,
-  42
-),
-(
-  'Casual Hooded Sweatshirt',
-  'Comfortable hooded sweatshirt for everyday wear.',
-  39.99,
-  'men',
-  'hoodies',
-  'https://images.unsplash.com/photo-1556821840-3a63f95609a7',
-  '["S", "M", "L", "XL", "XXL"]',
-  '["Gray", "Black", "Navy"]',
-  true,
-  false,
-  4.0,
-  35
-),
--- Women's clothing
 (
   'High-Waisted Skinny Jeans',
   'Flattering high-waisted skinny jeans with stretch.',

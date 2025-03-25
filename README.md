@@ -1,87 +1,191 @@
-# Fashion Store E-commerce Website
+# E-Commerce Website
 
-A responsive e-commerce website for men's and women's clothing built with Angular frontend and Node.js backend.
+A full-stack e-commerce platform built with Node.js, Express, MySQL, and Angular. This project features a modern, responsive design with a comprehensive product catalog, user authentication, and shopping cart functionality.
 
 ## Features
 
-- Responsive design that works on mobile, tablet, and desktop
-- Product listing with filtering by category (men/women)
-- Detailed product pages with size and color selection
-- Featured products showcase on the homepage
-- RESTful API with Node.js and Express
-- MySQL database for product storage
+- 🛍️ **Product Catalog**
+  - Browse products by category
+  - Detailed product views
+  - Size and color selection
+  - Product ratings and reviews
+
+- 👤 **User Authentication**
+  - Secure user registration and login
+  - JWT-based authentication
+  - Protected routes
+
+- 🛒 **Shopping Cart**
+  - Add/remove products
+  - Quantity management
+  - Size and color selection
+  - Real-time updates
+
+- 🎨 **Modern UI/UX**
+  - Responsive design
+  - Bootstrap 5 styling
+  - Loading states and animations
+  - Error handling and feedback
 
 ## Tech Stack
-
-### Frontend
-- Angular
-- Bootstrap 5 for responsive UI
-- RxJS for reactive programming
 
 ### Backend
 - Node.js
 - Express.js
-- MySQL with Sequelize
+- MySQL
+- Sequelize ORM
+- JWT Authentication
 
-## Project Structure
+### Frontend
+- Angular 17
+- TypeScript
+- Bootstrap 5
+- RxJS
+- Angular Material
 
+## Prerequisites
+
+- Node.js (v14 or higher)
+- MySQL (v8 or higher)
+- Angular CLI (v17 or higher)
+- npm or yarn
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/ecom-website.git
+cd ecom-website
 ```
-ecom-website/
-├── backend/                # Node.js backend
-│   ├── src/
-│   │   ├── config/         # Configuration files
-│   │   ├── controllers/    # API controllers
-│   │   ├── models/         # Sequelize models
-│   │   ├── routes/         # API routes
-│   │   └── index.js        # Main server file
-│   ├── .env                # Environment variables
-│   └── package.json        # Backend dependencies
-│
-└── frontend/               # Angular frontend
-    ├── src/
-    │   ├── app/
-    │   │   ├── components/ # Angular components
-    │   │   ├── models/     # TypeScript interfaces
-    │   │   └── services/   # Angular services
-    │   ├── assets/         # Static assets
-    │   └── environments/   # Environment configurations
-    └── package.json        # Frontend dependencies
+
+2. Install backend dependencies:
+```bash
+cd backend
+npm install
 ```
 
-## Setup Instructions
+3. Install frontend dependencies:
+```bash
+cd ../frontend
+npm install
+```
 
-### Prerequisites
-- Node.js and npm
-- MySQL Server
-- MySQL Workbench (optional, for database management)
+4. Set up the database:
+```bash
+# Navigate to backend directory
+cd ../backend
 
-### Backend Setup
-1. Navigate to the backend directory: `cd backend`
-2. Install dependencies: `npm install`
-3. Create a `.env` file with the following:
-   ```
-   PORT=5000
-   NODE_ENV=development
-   
-   # MySQL database configuration
-   DB_HOST=localhost
-   DB_PORT=3306
-   DB_NAME=ecommerce
-   DB_USER=root
-   DB_PASSWORD=your_password
-   ```
-4. Run the setup script:
-   - For Windows: `setup.bat`
-   - For Linux/Mac: `./setup.sh`
-5. Start the server: `npm run dev`
-6. Initialize the database with dummy products: 
-   - Make a POST request to `http://localhost:5000/api/products/create-dummy`
+# Create and configure the database
+mysql -u root -p < create_database.sql
+```
 
-### Frontend Setup
-1. Navigate to the frontend directory: `cd frontend`
-2. Install dependencies: `npm install`
-3. Start the development server: `npm start`
-4. Access the application at `http://localhost:4200`
+5. Configure environment variables:
+   - Copy `.env.example` to `.env` in the backend directory
+   - Update the database credentials and JWT secret
+
+## Development
+
+1. Start the backend server:
+```bash
+cd backend
+npm run dev
+```
+
+2. Start the frontend development server:
+```bash
+cd frontend
+ng serve
+```
+
+3. Access the application:
+   - Frontend: http://localhost:4200
+   - Backend API: http://localhost:5000
+
+## Deployment
+
+### Backend Deployment (AWS Elastic Beanstalk)
+
+1. Install AWS CLI and EB CLI:
+```bash
+pip install awscli
+pip install awsebcli
+```
+
+2. Configure AWS credentials:
+```bash
+aws configure
+```
+
+3. Initialize Elastic Beanstalk:
+```bash
+cd backend
+eb init
+```
+
+4. Create and deploy:
+```bash
+eb create production
+eb deploy
+```
+
+### Frontend Deployment (AWS S3 + CloudFront)
+
+1. Build the production version:
+```bash
+cd frontend
+ng build --configuration=production
+```
+
+2. Create and configure S3 bucket:
+```bash
+aws s3 mb s3://your-bucket-name
+aws s3 website s3://your-bucket-name --index-document index.html --error-document index.html
+```
+
+3. Upload built files:
+```bash
+aws s3 sync dist/frontend s3://your-bucket-name
+```
+
+4. Create CloudFront distribution:
+```bash
+aws cloudfront create-distribution --origin-domain-name your-bucket-name.s3.amazonaws.com --default-root-object index.html --enabled
+```
+
+## Environment Variables
+
+### Backend (.env)
+```
+DB_HOST=your-db-host
+DB_USER=your-db-user
+DB_PASSWORD=your-db-password
+DB_NAME=ecommerce
+JWT_SECRET=your-jwt-secret
+```
+
+### Frontend (environment.ts)
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:5000/api'
+};
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## License
-MIT 
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [Bootstrap](https://getbootstrap.com/) for the UI components
+- [Unsplash](https://unsplash.com/) for the product images
+- [Angular](https://angular.io/) for the frontend framework
+- [Express](https://expressjs.com/) for the backend framework 

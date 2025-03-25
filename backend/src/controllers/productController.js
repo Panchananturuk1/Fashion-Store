@@ -61,7 +61,9 @@ const createDummyProducts = async (req, res) => {
     const existingProducts = await Product.count();
     
     if (existingProducts > 0) {
-      return res.status(400).json({ message: 'Dummy products already exist' });
+      return res.status(400).json({ 
+        message: 'Products already exist. Please use the regular product creation endpoint to add new products.' 
+      });
     }
     
     // Men's clothing dummy data
@@ -207,9 +209,16 @@ const createDummyProducts = async (req, res) => {
     // Insert dummy data using bulkCreate
     await Product.bulkCreate(dummyProducts);
     
-    res.status(201).json({ message: 'Dummy products created successfully', count: dummyProducts.length });
+    res.status(201).json({ 
+      message: 'Dummy products created successfully', 
+      count: dummyProducts.length 
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    console.error('Error creating dummy products:', error);
+    res.status(500).json({ 
+      message: 'Server Error', 
+      error: error.message 
+    });
   }
 };
 
