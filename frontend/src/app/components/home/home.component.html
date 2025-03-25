@@ -1,0 +1,74 @@
+<div class="home-container">
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h1 class="display-4">Discover the Latest Fashion Trends</h1>
+          <p class="lead">Explore our collection of high-quality clothing for men and women.</p>
+          <div class="mt-4">
+            <a routerLink="/products/men" class="btn btn-dark me-2">Men's Collection</a>
+            <a routerLink="/products/women" class="btn btn-outline-dark">Women's Collection</a>
+          </div>
+        </div>
+        <div class="col-md-6 d-flex justify-content-center">
+          <img src="https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5" alt="Fashion Collection" class="img-fluid rounded">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collections Section -->
+  <div class="collections-section mb-5">
+    <div class="container">
+      <div class="row g-4">
+        <!-- Men's Collection -->
+        <div class="col-md-6">
+          <div class="collection-card position-relative overflow-hidden rounded-3">
+            <img [src]="mensCollectionImage || 'assets/images/mens-collection.jpg'" 
+                 alt="Men's Collection" 
+                 class="img-fluid w-100 collection-image">
+            <div class="collection-overlay">
+              <h2 class="text-white">Men's Collection</h2>
+              <a [routerLink]="['/products', 'men']" class="btn btn-light">Shop Now</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Women's Collection -->
+        <div class="col-md-6">
+          <div class="collection-card position-relative overflow-hidden rounded-3">
+            <img [src]="womensCollectionImage || 'assets/images/womens-collection.jpg'" 
+                 alt="Women's Collection" 
+                 class="img-fluid w-100 collection-image">
+            <div class="collection-overlay">
+              <h2 class="text-white">Women's Collection</h2>
+              <a [routerLink]="['/products', 'women']" class="btn btn-light">Shop Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured Products Section -->
+  <div class="container mt-5">
+    <div class="featured-products">
+      <h2 class="text-center mb-4">Featured Products</h2>
+      <div class="row g-4">
+        <div class="col-md-3" *ngFor="let product of featuredProducts">
+          <div class="card h-100">
+            <img [src]="product.imageUrl" [alt]="product.name" class="card-img-top">
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text">{{ product.price | currency }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <a [routerLink]="['/product', product.id]" class="btn btn-sm btn-outline-dark">View Details</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

@@ -1,0 +1,71 @@
+<div class="container mt-4">
+  <h2>Add New Product</h2>
+  <form (ngSubmit)="onSubmit()" class="mt-4">
+    <div class="mb-3">
+      <label for="name" class="form-label">Product Name</label>
+      <input type="text" class="form-control" id="name" [(ngModel)]="product.name" name="name" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <textarea class="form-control" id="description" [(ngModel)]="product.description" name="description" rows="3" required></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="price" class="form-label">Price</label>
+      <input type="number" class="form-control" id="price" [(ngModel)]="product.price" name="price" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="category" class="form-label">Category</label>
+      <select class="form-select" id="category" [(ngModel)]="product.category" name="category" required>
+        <option *ngFor="let category of categories" [value]="category">{{category | titlecase}}</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="subCategory" class="form-label">Sub Category</label>
+      <select class="form-control" [(ngModel)]="product.subCategory" name="subCategory" required>
+        <option value="">Select Subcategory</option>
+        <option *ngFor="let subCategory of subCategories[product.category || 'men']" [value]="subCategory">{{subCategory | titlecase}}</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="imageUrl" class="form-label">Image URL</label>
+      <input type="text" class="form-control" id="imageUrl" [(ngModel)]="product.imageUrl" name="imageUrl" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="size" class="form-label">Sizes (comma-separated)</label>
+      <input type="text" class="form-control" id="size" [(ngModel)]="product.size" name="size" placeholder="S, M, L, XL" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="color" class="form-label">Colors (comma-separated)</label>
+      <input type="text" class="form-control" id="color" [(ngModel)]="product.color" name="color" placeholder="Red, Blue, Green" required>
+    </div>
+
+    <div class="mb-3 form-check">
+      <input type="checkbox" class="form-check-input" id="inStock" [(ngModel)]="product.inStock" name="inStock">
+      <label class="form-check-label" for="inStock">In Stock</label>
+    </div>
+
+    <div class="mb-3 form-check">
+      <input type="checkbox" class="form-check-input" id="featured" [(ngModel)]="product.featured" name="featured">
+      <label class="form-check-label" for="featured">Featured Product</label>
+    </div>
+
+    <div class="mb-3">
+      <label for="rating" class="form-label">Rating (0-5)</label>
+      <input type="number" class="form-control" id="rating" [(ngModel)]="product.rating" name="rating" min="0" max="5" step="0.1">
+    </div>
+
+    <div class="mb-3">
+      <label for="numReviews" class="form-label">Number of Reviews</label>
+      <input type="number" class="form-control" id="numReviews" [(ngModel)]="product.numReviews" name="numReviews" min="0">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Product</button>
+  </form>
+</div> 

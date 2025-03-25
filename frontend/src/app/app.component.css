@@ -1,0 +1,4 @@
+/* Global Styles for the App Component */
+.container {
+  min-height: calc(100vh - 200px); /* Adjust based on header/footer height */
+} 

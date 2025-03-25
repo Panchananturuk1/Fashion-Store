@@ -1,0 +1,43 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-select:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  font-weight: 500;
+}
+
+.text-muted {
+  font-size: 0.85rem;
+}
+
+.form-check {
+  margin-bottom: 15px;
+}
+
+.form-check-input:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+} 

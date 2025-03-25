@@ -1,0 +1,60 @@
+<div class="container mt-4">
+  <div class="row">
+    <!-- User Profile Section -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Profile</h3>
+          <div *ngIf="user">
+            <p><strong>Name:</strong> {{ user.name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Role:</strong> {{ user.role }}</p>
+            <button class="btn btn-danger" (click)="logout()">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Section -->
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="card-title">Products</h3>
+            <a routerLink="/add-product" class="btn btn-primary">Add New Product</a>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let product of products">
+                  <td>{{ product.name }}</td>
+                  <td>{{ product.category }}</td>
+                  <td>${{ product.price }}</td>
+                  <td>
+                    <span [class]="product.inStock ? 'text-success' : 'text-danger'">
+                      {{ product.inStock ? 'In Stock' : 'Out of Stock' }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-info me-2">Edit</button>
+                    <button class="btn btn-sm btn-danger">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

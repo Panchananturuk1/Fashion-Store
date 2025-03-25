@@ -1,0 +1,12 @@
+{
+  "name": "ecom-website",
+  "version": "1.0.0",
+  "description": "E-commerce website with Angular frontend and Node.js backend",
+  "scripts": {
+    "start:backend": "cd backend && node src/index.js",
+    "start:frontend": "cd frontend && npm start",
+    "start": "echo \"Run 'npm run start:backend' and 'npm run start:frontend' in separate terminals\""
+  },
+  "author": "",
+  "license": "MIT"
+} 
