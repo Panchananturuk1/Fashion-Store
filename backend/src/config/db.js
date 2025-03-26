@@ -29,8 +29,8 @@ const connectDB = async () => {
     await sequelize.authenticate();
     console.log('MySQL Database connection established successfully');
     
-    // Force sync all defined models to the DB
-    await sequelize.sync({ force: true });
+    // Sync all defined models to the DB without dropping tables
+    await sequelize.sync({ force: false });
     console.log('Database & tables synced');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
