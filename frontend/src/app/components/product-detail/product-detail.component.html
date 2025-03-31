@@ -24,6 +24,13 @@
       <h1 class="mb-3">{{ product.name }}</h1>
       <p class="lead mb-4">{{ product.description }}</p>
       
+      <!-- Added to Cart Success Message -->
+      <div *ngIf="addedToCart" class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Success!</strong> Item added to your cart.
+        <button (click)="goToCart()" class="btn btn-sm btn-success ms-2">View Cart</button>
+        <button type="button" class="btn-close" (click)="addedToCart = false" aria-label="Close"></button>
+      </div>
+      
       <div class="mb-4">
         <h3 class="text-primary">{{ product.price | currency }}</h3>
         <div class="d-flex align-items-center mb-3">

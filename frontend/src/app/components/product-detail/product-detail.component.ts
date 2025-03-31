@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
+import { CartService } from '../../services/cart.service';
 import { Product } from '../../models/product.model';
 
 @Component({
@@ -15,10 +16,13 @@ export class ProductDetailComponent implements OnInit {
   selectedSize: string = '';
   selectedColor: string = '';
   quantity: number = 1;
+  addedToCart = false;
 
   constructor(
     private productService: ProductService,
-    private route: ActivatedRoute
+    private cartService: CartService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -73,13 +77,25 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
 
-    // TODO: Implement add to cart functionality
-    console.log('Adding to cart:', {
+    this.cartService.addToCart({
       product: this.product,
       size: this.selectedSize,
       color: this.selectedColor,
       quantity: this.quantity
     });
+
+    // Show the added to cart confirmation
+    this.addedToCart = true;
+    
+    // Reset the flag after a delay
+    setTimeout(() => {
+      this.addedToCart = false;
+    }, 3000);
+  }
+
+  // Method to navigate to cart page
+  goToCart(): void {
+    this.router.navigate(['/cart']);
   }
 
   getColorHex(colorName: string): string {
