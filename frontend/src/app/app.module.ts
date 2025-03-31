@@ -21,7 +21,6 @@ import { AppRoutingModule } from './app-routing.module';
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderComponent,
     HomeComponent,
     ProductListComponent,
     ProductDetailComponent,
@@ -37,7 +36,8 @@ import { AppRoutingModule } from './app-routing.module';
     AppRoutingModule,
     RouterModule,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    HeaderComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

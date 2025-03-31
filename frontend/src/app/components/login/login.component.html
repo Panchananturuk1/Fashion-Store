@@ -4,6 +4,13 @@
       <div class="card">
         <div class="card-body">
           <h2 class="text-center mb-4">Login</h2>
+          
+          <!-- Error Alert -->
+          <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ errorMessage }}
+            <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
+          </div>
+          
           <form (ngSubmit)="onSubmit()">
             <div class="mb-3">
               <label for="email" class="form-label">Email address</label>
