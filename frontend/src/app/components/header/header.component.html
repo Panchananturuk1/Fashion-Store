@@ -32,17 +32,27 @@
           </a>
         </li>
         
+        <!-- User dropdown menu when logged in -->
+        <li class="nav-item dropdown" *ngIf="isLoggedIn()">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+            data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" routerLink="/profile">My Profile</a></li>
+            <li><a class="dropdown-item" routerLink="/orders">My Orders</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" routerLink="/dashboard">Dashboard</a></li>
+            <li><a class="dropdown-item" href="#" (click)="logout($event)">Logout</a></li>
+          </ul>
+        </li>
+
+        <!-- Login/Register links when not logged in -->
         <li class="nav-item" *ngIf="!isLoggedIn()">
           <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
         </li>
         <li class="nav-item" *ngIf="!isLoggedIn()">
           <a class="nav-link" routerLink="/register" routerLinkActive="active">Register</a>
-        </li>
-        <li class="nav-item" *ngIf="isLoggedIn()">
-          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-        </li>
-        <li class="nav-item" *ngIf="isLoggedIn()">
-          <a class="nav-link" href="#" (click)="logout($event)">Logout</a>
         </li>
       </ul>
     </div>

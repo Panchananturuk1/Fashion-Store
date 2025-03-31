@@ -85,8 +85,63 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+// Update user profile
+const updateProfile = async (req, res) => {
+  try {
+    console.log('Update profile request received for user ID:', req.user.id);
+    console.log('Request body:', req.body);
+
+    const user = await User.findByPk(req.user.id);
+    
+    if (!user) {
+      console.log('User not found with ID:', req.user.id);
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update basic info with a simpler approach
+    const { name, email, phone, street, city, state, zip_code } = req.body;
+    
+    // Build the update object with only provided fields
+    const updates = {};
+    
+    if (name) updates.name = name;
+    if (phone !== undefined) updates.phone = phone;
+    if (street !== undefined) updates.street = street;
+    if (city !== undefined) updates.city = city;
+    if (state !== undefined) updates.state = state;
+    if (zip_code !== undefined) updates.zip_code = zip_code;
+    
+    // Only check email uniqueness if it's changing
+    if (email && email !== user.email) {
+      const emailExists = await User.findOne({ where: { email } });
+      if (emailExists && emailExists.id !== user.id) {
+        return res.status(400).json({ message: 'Email already in use' });
+      }
+      updates.email = email;
+    }
+
+    console.log('Updating user with:', updates);
+    
+    // Update user with the collected changes
+    await user.update(updates);
+
+    console.log('User updated successfully');
+
+    // Return the updated user data
+    const updatedUser = await User.findByPk(req.user.id, {
+      attributes: { exclude: ['password'] }
+    });
+    
+    res.json(updatedUser);
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
   getUserProfile,
+  updateProfile
 }; 

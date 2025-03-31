@@ -1,0 +1,198 @@
+<div class="container mt-5">
+  <div class="row">
+    <!-- Profile sidebar -->
+    <div class="col-md-3">
+      <div class="card mb-4">
+        <div class="card-body text-center">
+          <div class="avatar mb-3">
+            <i class="bi bi-person-circle" style="font-size: 5rem;"></i>
+          </div>
+          <h5 class="card-title">{{ user?.name }}</h5>
+          <p class="card-text text-muted">{{ user?.email }}</p>
+        </div>
+        <div class="list-group list-group-flush">
+          <a routerLink="/profile" class="list-group-item list-group-item-action active">
+            <i class="bi bi-person me-2"></i> Profile
+          </a>
+          <a routerLink="/orders" class="list-group-item list-group-item-action">
+            <i class="bi bi-box me-2"></i> Orders
+          </a>
+          <a routerLink="/settings" class="list-group-item list-group-item-action">
+            <i class="bi bi-gear me-2"></i> Settings
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Profile form -->
+    <div class="col-md-9">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h4 class="mb-0">My Profile</h4>
+        </div>
+        <div class="card-body">
+          <!-- Loading state -->
+          <div *ngIf="loading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading your profile...</p>
+          </div>
+          
+          <!-- Success message -->
+          <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ successMessage }}
+            <button type="button" class="btn-close" (click)="successMessage = ''" aria-label="Close"></button>
+          </div>
+          
+          <!-- Error message -->
+          <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ errorMessage }}
+            <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
+          </div>
+          
+          <!-- Debug information -->
+          <div *ngIf="debugResult" class="alert alert-info mt-4">
+            <h5>Debug Info</h5>
+            <pre>{{ debugResult | json }}</pre>
+          </div>
+          
+          <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+            <h5 class="mb-3">Personal Information</h5>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="name" class="form-label">Full Name</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="name" 
+                  formControlName="name"
+                  [ngClass]="{'is-invalid': profileForm.get('name')?.invalid && profileForm.get('name')?.touched}"
+                >
+                <div class="invalid-feedback" *ngIf="profileForm.get('name')?.errors?.['required']">
+                  Name is required
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="email" class="form-label">Email</label>
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  id="email" 
+                  formControlName="email"
+                  [ngClass]="{'is-invalid': profileForm.get('email')?.invalid && profileForm.get('email')?.touched}"
+                >
+                <div class="invalid-feedback" *ngIf="profileForm.get('email')?.errors?.['required']">
+                  Email is required
+                </div>
+                <div class="invalid-feedback" *ngIf="profileForm.get('email')?.errors?.['email']">
+                  Please enter a valid email
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="phone" class="form-label">Phone Number</label>
+              <input 
+                type="tel" 
+                class="form-control" 
+                id="phone" 
+                formControlName="phone"
+                placeholder="10-digit phone number"
+                [ngClass]="{'is-invalid': profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched}"
+              >
+              <div class="invalid-feedback" *ngIf="profileForm.get('phone')?.errors?.['pattern']">
+                Please enter a valid 10-digit phone number
+              </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <h5 class="mb-3">Address Information</h5>
+            <div formGroupName="address">
+              <div class="mb-3">
+                <label for="street" class="form-label">Street Address</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="street" 
+                  formControlName="street"
+                  [ngClass]="{'is-invalid': profileForm.get('address.street')?.invalid && profileForm.get('address.street')?.touched}"
+                >
+                <div class="invalid-feedback" *ngIf="profileForm.get('address.street')?.errors?.['required']">
+                  Street address is required
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-5 mb-3">
+                  <label for="city" class="form-label">City</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="city" 
+                    formControlName="city"
+                    [ngClass]="{'is-invalid': profileForm.get('address.city')?.invalid && profileForm.get('address.city')?.touched}"
+                  >
+                  <div class="invalid-feedback" *ngIf="profileForm.get('address.city')?.errors?.['required']">
+                    City is required
+                  </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                  <label for="state" class="form-label">State</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="state" 
+                    formControlName="state"
+                    [ngClass]="{'is-invalid': profileForm.get('address.state')?.invalid && profileForm.get('address.state')?.touched}"
+                  >
+                  <div class="invalid-feedback" *ngIf="profileForm.get('address.state')?.errors?.['required']">
+                    State is required
+                  </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                  <label for="zipCode" class="form-label">Zip Code</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="zipCode" 
+                    formControlName="zipCode"
+                    [ngClass]="{'is-invalid': profileForm.get('address.zipCode')?.invalid && profileForm.get('address.zipCode')?.touched}"
+                  >
+                  <div class="invalid-feedback" *ngIf="profileForm.get('address.zipCode')?.errors?.['required']">
+                    Zip code is required
+                  </div>
+                  <div class="invalid-feedback" *ngIf="profileForm.get('address.zipCode')?.errors?.['pattern']">
+                    Please enter a valid zip code (e.g., 12345 or 12345-6789)
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || submitting">
+                <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                {{ submitting ? 'Saving...' : 'Save Changes' }}
+              </button>
+              
+              <!-- Debug buttons -->
+              <div class="d-flex gap-2 mt-2">
+                <button type="button" class="btn btn-secondary flex-grow-1" (click)="checkToken()">
+                  Check Auth Status
+                </button>
+                <button type="button" class="btn btn-info flex-grow-1" (click)="testApiAccess()">
+                  Test API Access
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

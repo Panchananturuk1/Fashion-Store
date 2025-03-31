@@ -7,7 +7,8 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "init-db": "node src/database/initDb.js"
+    "init-db": "node src/database/initDb.js",
+    "run-migrations": "node src/database/runMigration.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

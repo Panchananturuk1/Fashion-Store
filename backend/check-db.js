@@ -1,51 +1,25 @@
-const { Sequelize } = require('sequelize');
-const dotenv = require('dotenv');
-
-// Load environment variables
-dotenv.config();
-
-// Create Sequelize instance
-const sequelize = new Sequelize({
-  dialect: 'mysql',
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
+const { sequelize } = require('./src/config/db');
 
 async function checkDatabase() {
   try {
     // Test connection
     await sequelize.authenticate();
-    console.log('Connected to MySQL database successfully.');
-
-    // Use the ecommerce database
-    await sequelize.query('USE ecommerce');
-    console.log('Using ecommerce database.');
-
-    // Query all products
-    const [products] = await sequelize.query('SELECT * FROM products');
+    console.log('Connected to database successfully!');
     
-    if (products.length === 0) {
-      console.log('No products found in the database.');
-    } else {
-      console.log(`Found ${products.length} products in the database:`);
-      products.forEach(product => {
-        console.log(`\n${product.name}:`);
-        console.log(`  Category: ${product.category}`);
-        console.log(`  Price: $${product.price}`);
-        console.log(`  Rating: ${product.rating} (${product.numReviews} reviews)`);
-      });
-    }
+    // Check users table schema
+    const [userColumns] = await sequelize.query('DESCRIBE users');
+    console.log('Users table schema:');
+    userColumns.forEach(col => {
+      console.log(`- ${col.Field} (${col.Type}) ${col.Null === 'YES' ? 'NULL' : 'NOT NULL'}`);
+    });
 
-  } catch (error) {
-    console.error('Error:', error);
-  } finally {
+    // Disconnect
     await sequelize.close();
-    console.log('Database connection closed.');
+    console.log('Database connection closed');
+  } catch (err) {
+    console.error('Database Error:', err.message);
+    process.exit(1);
   }
 }
 
-// Run the check
 checkDatabase(); 
