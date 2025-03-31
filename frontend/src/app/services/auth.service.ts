@@ -91,9 +91,4 @@ export class AuthService {
         })
       );
   }
-  
-  // New method to test if API is reachable
-  testApi(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}`);
-  }
 } 

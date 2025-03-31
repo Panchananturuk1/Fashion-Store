@@ -51,12 +51,6 @@
             <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
           </div>
           
-          <!-- Debug information -->
-          <div *ngIf="debugResult" class="alert alert-info mt-4">
-            <h5>Debug Info</h5>
-            <pre>{{ debugResult | json }}</pre>
-          </div>
-          
           <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
             <h5 class="mb-3">Personal Information</h5>
             
@@ -179,16 +173,6 @@
                 <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                 {{ submitting ? 'Saving...' : 'Save Changes' }}
               </button>
-              
-              <!-- Debug buttons -->
-              <div class="d-flex gap-2 mt-2">
-                <button type="button" class="btn btn-secondary flex-grow-1" (click)="checkToken()">
-                  Check Auth Status
-                </button>
-                <button type="button" class="btn btn-info flex-grow-1" (click)="testApiAccess()">
-                  Test API Access
-                </button>
-              </div>
             </div>
           </form>
         </div>

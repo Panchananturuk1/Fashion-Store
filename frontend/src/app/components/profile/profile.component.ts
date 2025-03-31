@@ -20,7 +20,6 @@ export class ProfileComponent implements OnInit {
   errorMessage = '';
   loading = true;
   submitting = false;
-  debugResult: any = null;
 
   constructor(
     private fb: FormBuilder,
@@ -29,21 +28,20 @@ export class ProfileComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('Profile component initialized');
-    // Initialize form
+    // Initialize the form
     this.profileForm = this.fb.group({
-      name: ['', Validators.required],
+      name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.pattern(/^\d{10}$/)],
+      phone: ['', [Validators.pattern(/^\+?[0-9\s\-\(\)]{7,20}$/)]],
       address: this.fb.group({
-        street: ['', Validators.required],
-        city: ['', Validators.required],
-        state: ['', Validators.required],
-        zipCode: ['', [Validators.required, Validators.pattern(/^\d{5}(-\d{4})?$/)]]
+        street: [''],
+        city: [''],
+        state: [''],
+        zipCode: ['', [Validators.pattern(/^\d{5}(-\d{4})?$/)]]
       })
     });
-
-    // Get user data
+    
+    // Load user profile data
     this.loadUserProfile();
   }
 
@@ -151,63 +149,6 @@ export class ProfileComponent implements OnInit {
         }
         
         this.submitting = false;
-      }
-    });
-  }
-
-  // Debug method to check token validity
-  checkToken(): void {
-    this.loading = true;
-    this.errorMessage = '';
-    this.debugResult = null;
-    
-    const token = localStorage.getItem('token');
-    console.log('Current token:', token);
-    
-    this.http.get(`${environment.apiUrl}/auth/debug`).subscribe({
-      next: (response) => {
-        console.log('Debug response:', response);
-        this.debugResult = response;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Debug error:', error);
-        this.errorMessage = 'Token validation failed. Please try logging in again.';
-        this.loading = false;
-      }
-    });
-  }
-
-  // Test API access with the test endpoint
-  testApiAccess(): void {
-    this.loading = true;
-    this.errorMessage = '';
-    this.debugResult = null;
-    
-    // Test the auth/test endpoint which doesn't require authentication
-    this.http.get(`${environment.apiUrl}/auth/test`).subscribe({
-      next: (response) => {
-        console.log('API test response:', response);
-        this.debugResult = {
-          success: true,
-          endpoint: `${environment.apiUrl}/auth/test`,
-          response: response
-        };
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('API test error:', error);
-        this.errorMessage = 'API test failed. Server might be unavailable.';
-        this.debugResult = {
-          success: false,
-          endpoint: `${environment.apiUrl}/auth/test`,
-          error: {
-            status: error.status,
-            message: error.message,
-            statusText: error.statusText
-          }
-        };
-        this.loading = false;
       }
     });
   }
