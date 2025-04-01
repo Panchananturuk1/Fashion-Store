@@ -8,5 +8,8 @@
     "start": "echo \"Run 'npm run start:backend' and 'npm run start:frontend' in separate terminals\""
   },
   "author": "",
-  "license": "MIT"
-} 
+  "license": "MIT",
+  "devDependencies": {
+    "@angular/cli": "^16.0.2"
+  }
+}
