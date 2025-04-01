@@ -1,15 +1,16 @@
 {
-  "name": "ecom-website",
+  "name": "fashion-store",
   "version": "1.0.0",
-  "description": "E-commerce website with Angular frontend and Node.js backend",
-  "scripts": {
-    "start:backend": "cd backend && node src/index.js",
-    "start:frontend": "cd frontend && npm start",
-    "start": "echo \"Run 'npm run start:backend' and 'npm run start:frontend' in separate terminals\""
+  "description": "Fashion Store E-Commerce Application",
+  "engines": {
+    "node": "18.19.0"
   },
-  "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "@angular/cli": "^16.2.0"
-  }
+  "scripts": {
+    "frontend:install": "cd frontend && npm install",
+    "frontend:build": "cd frontend && npm run build",
+    "backend:install": "cd backend && npm install",
+    "backend:build": "cd backend && npm run build",
+    "build": "npm run frontend:install && npm run frontend:build"
+  },
+  "private": true
 }
