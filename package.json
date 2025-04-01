@@ -10,7 +10,7 @@
     "frontend:build": "cd frontend && npm run build",
     "backend:install": "cd backend && npm install",
     "backend:build": "cd backend && npm run build",
-    "build": "npm run frontend:install && npm run frontend:build"
+    "build": "cd frontend && npm install && npm run build"
   },
   "private": true
 }
