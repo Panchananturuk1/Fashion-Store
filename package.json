@@ -6,7 +6,7 @@
     "node": "18.19.0"
   },
   "scripts": {
-    "build": "node cloudflare-pages.js"
+    "build": "cd frontend && node cloudflare-build.js"
   },
   "private": true
 }
