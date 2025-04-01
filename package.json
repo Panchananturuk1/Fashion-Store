@@ -10,6 +10,6 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@angular/cli": "^16.0.2"
+    "@angular/cli": "^16.2.0"
   }
 }
