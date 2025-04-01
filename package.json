@@ -6,7 +6,8 @@
     "node": "18.19.0"
   },
   "scripts": {
-    "build": "cd frontend && node cloudflare-build.js"
+    "build": "cd frontend && node cloudflare-build.js",
+    "build:direct": "cd frontend && npm config set legacy-peer-deps true && npm install --legacy-peer-deps --force && npm run build"
   },
   "private": true
 }
