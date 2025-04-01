@@ -6,11 +6,7 @@
     "node": "18.19.0"
   },
   "scripts": {
-    "frontend:install": "cd frontend && npm install",
-    "frontend:build": "cd frontend && npm run build",
-    "backend:install": "cd backend && npm install",
-    "backend:build": "cd backend && npm run build",
-    "build": "cd frontend && npm install && npm run build"
+    "build": "bash ./cloudflare-build.sh"
   },
   "private": true
 }
