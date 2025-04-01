@@ -5,6 +5,5 @@ publish = "frontend/dist/fashion-store"
 [build.environment]
 NODE_VERSION = "18.19.0"
 
-# This is required for Cloudflare Pages
-[pages]
+# Use this format for Cloudflare Pages
 pages_build_output_dir = "frontend/dist/fashion-store" 
