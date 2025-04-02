@@ -1,147 +1,77 @@
 <div class="container mt-5">
-  <div class="row">
-    <!-- Profile sidebar -->
-    <div class="col-md-3">
-      <div class="card mb-4">
-        <div class="card-body text-center">
-          <div class="avatar mb-3">
-            <i class="bi bi-person-circle" style="font-size: 5rem;"></i>
-          </div>
-          <h5 class="card-title">My Account</h5>
-        </div>
-        <div class="list-group list-group-flush">
-          <a routerLink="/profile" class="list-group-item list-group-item-action">
-            <i class="bi bi-person me-2"></i> Profile
-          </a>
-          <a routerLink="/orders" class="list-group-item list-group-item-action active">
-            <i class="bi bi-box me-2"></i> Orders
-          </a>
-          <a routerLink="/settings" class="list-group-item list-group-item-action">
-            <i class="bi bi-gear me-2"></i> Settings
-          </a>
-        </div>
-      </div>
+  <h2 class="mb-4">My Orders</h2>
+  
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
-    
-    <!-- Orders list -->
-    <div class="col-md-9">
-      <div class="card">
+    <p class="mt-3">Loading your orders...</p>
+  </div>
+  
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+    <div class="mt-3">
+      <button class="btn btn-outline-primary" (click)="goToShop()">Continue Shopping</button>
+    </div>
+  </div>
+  
+  <!-- No Orders Message -->
+  <div *ngIf="!loading && !error && orders.length === 0" class="text-center py-5">
+    <i class="bi bi-bag-x" style="font-size: 4rem; color: #ccc;"></i>
+    <h3 class="mt-3">You haven't placed any orders yet</h3>
+    <p class="text-muted mb-4">Start shopping and your orders will appear here.</p>
+    <button (click)="goToShop()" class="btn btn-primary">Go to Shop</button>
+  </div>
+  
+  <!-- Orders List -->
+  <div *ngIf="!loading && !error && orders.length > 0" class="row">
+    <div class="col-12">
+      <div class="card mb-4" *ngFor="let order of orders">
         <div class="card-header bg-white">
-          <h4 class="mb-0">My Orders</h4>
+          <div class="row align-items-center">
+            <div class="col-md-3">
+              <span class="small text-muted">Order #</span>
+              <p class="mb-0 fw-bold">{{ order.id }}</p>
+            </div>
+            <div class="col-md-3">
+              <span class="small text-muted">Date</span>
+              <p class="mb-0">{{ order.created_at | date:'mediumDate' }}</p>
+            </div>
+            <div class="col-md-3">
+              <span class="small text-muted">Status</span>
+              <p class="mb-0">
+                <span class="badge" [ngClass]="order.status === 'pending' ? 'bg-warning' : 'bg-success'">{{ order.status }}</span>
+              </p>
+            </div>
+            <div class="col-md-3">
+              <span class="small text-muted">Payment</span>
+              <p class="mb-0">
+                <span class="badge" [ngClass]="{
+                  'bg-primary': order.payment_method === 'card',
+                  'bg-success': order.payment_method === 'cod',
+                  'bg-danger': order.payment_method === 'upi'
+                }">{{ order.payment_method === 'card' ? 'Card' : order.payment_method === 'cod' ? 'COD' : 'UPI' }}</span>
+                <span class="text-primary ms-2">{{ order.total | currency }}</span>
+              </p>
+            </div>
+          </div>
         </div>
         <div class="card-body">
-          <!-- Loading state -->
-          <div *ngIf="loading" class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-3">Loading your orders...</p>
-          </div>
-          
-          <!-- No orders -->
-          <div *ngIf="!loading && orders.length === 0" class="text-center py-5">
-            <i class="bi bi-bag-x" style="font-size: 4rem; color: #ccc;"></i>
-            <h3 class="mt-3">No Orders Found</h3>
-            <p class="text-muted mb-4">You haven't placed any orders yet.</p>
-            <button routerLink="/" class="btn btn-primary">Start Shopping</button>
-          </div>
-          
-          <!-- Order list -->
-          <div *ngIf="!loading && orders.length > 0 && !selectedOrder" class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Total</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let order of orders">
-                  <td>{{ order.id }}</td>
-                  <td>{{ order.date | date }}</td>
-                  <td>
-                    <span class="badge" [ngClass]="{
-                      'bg-success': order.status === 'Delivered',
-                      'bg-primary': order.status === 'Shipped',
-                      'bg-warning text-dark': order.status === 'Processing',
-                      'bg-danger': order.status === 'Cancelled'
-                    }">{{ order.status }}</span>
-                  </td>
-                  <td>{{ order.total | currency }}</td>
-                  <td>
-                    <button class="btn btn-sm btn-outline-primary" (click)="viewOrderDetails(order)">
-                      View Details
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          
-          <!-- Order details -->
-          <div *ngIf="selectedOrder" class="order-details">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-              <button class="btn btn-sm btn-outline-secondary" (click)="closeOrderDetails()">
-                <i class="bi bi-arrow-left me-1"></i> Back to Orders
-              </button>
-              <span class="badge" [ngClass]="{
-                'bg-success': selectedOrder.status === 'Delivered',
-                'bg-primary': selectedOrder.status === 'Shipped',
-                'bg-warning text-dark': selectedOrder.status === 'Processing',
-                'bg-danger': selectedOrder.status === 'Cancelled'
-              }">{{ selectedOrder.status }}</span>
-            </div>
-            
-            <div class="order-header mb-4">
-              <h5>Order #{{ selectedOrder.id }}</h5>
-              <p class="text-muted mb-0">Placed on {{ selectedOrder.date | date:'mediumDate' }}</p>
-            </div>
-            
-            <div class="card mb-4">
-              <div class="card-header bg-white">
-                <h6 class="mb-0">Order Items</h6>
-              </div>
-              <div class="card-body p-0">
-                <div *ngFor="let item of selectedOrder.items" class="order-item p-3 border-bottom">
-                  <div class="row align-items-center">
-                    <div class="col-md-2">
-                      <img [src]="item.imageUrl || 'assets/images/placeholder.jpg'" [alt]="item.name" class="img-fluid rounded">
-                    </div>
-                    <div class="col-md-6">
-                      <h6 class="mb-1">{{ item.name }}</h6>
-                      <div class="small text-muted">
-                        <span class="me-2">Size: {{ item.size }}</span>
-                        <span>Color: {{ item.color }}</span>
-                      </div>
-                    </div>
-                    <div class="col-md-2 text-center">
-                      <span class="d-block">Qty: {{ item.quantity }}</span>
-                    </div>
-                    <div class="col-md-2 text-end">
-                      <span class="d-block fw-bold">{{ item.price | currency }}</span>
-                      <span class="small text-muted">{{ (item.price * item.quantity) | currency }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer bg-white">
-                <div class="d-flex justify-content-between">
-                  <span class="fw-bold">Total</span>
-                  <span class="fw-bold">{{ selectedOrder.total | currency }}</span>
-                </div>
+          <div class="row">
+            <div class="col-md-8">
+              <div class="mb-3">
+                <span class="small text-muted">Shipping Address</span>
+                <p class="mb-0">{{ order.first_name }} {{ order.last_name }}, {{ order.address }}, {{ order.city }}, {{ order.state }} {{ order.zip_code }}</p>
               </div>
             </div>
-            
-            <div class="d-grid">
-              <button class="btn btn-outline-primary" [disabled]="selectedOrder.status !== 'Delivered'">
-                <i class="bi bi-arrow-repeat me-2"></i> Buy Again
+            <div class="col-md-4 text-md-end">
+              <button class="btn btn-outline-primary" (click)="viewOrderDetails(order.id)">
+                View Order Details
               </button>
             </div>
           </div>
-          
         </div>
       </div>
     </div>

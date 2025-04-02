@@ -11,9 +11,14 @@
 }
 
 .card {
-  border-radius: 0.5rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .table th {
@@ -35,18 +40,16 @@
 }
 
 .badge {
-  padding: 0.5em 0.75em;
+  padding: 7px 12px;
   font-weight: 500;
 }
 
 .btn-outline-primary {
-  color: #0d6efd;
-  border-color: #0d6efd;
+  transition: all 0.3s ease;
 }
 
 .btn-outline-primary:hover {
-  background-color: #0d6efd;
-  color: white;
+  transform: translateY(-2px);
 }
 
 .btn-outline-secondary {
@@ -57,4 +60,20 @@
 .btn-outline-secondary:hover {
   background-color: #6c757d;
   color: white;
+}
+
+.card-header {
+  padding: 15px 20px;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.text-primary {
+  color: #007bff !important;
+}
+
+.fw-bold {
+  font-weight: 600 !important;
 } 

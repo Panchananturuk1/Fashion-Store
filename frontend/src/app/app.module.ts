@@ -15,9 +15,14 @@ import { FooterComponent } from './components/footer/footer.component';
 import { AddProductComponent } from './components/add-product/add-product.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { CheckoutComponent } from './components/checkout/checkout.component';
+import { OrderConfirmationComponent } from './components/order-confirmation/order-confirmation.component';
+import { OrdersComponent } from './components/orders/orders.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { OrderService } from './services/order.service';
 
 @NgModule({
   declarations: [
@@ -27,7 +32,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     ProductDetailComponent,
     CartComponent,
     FooterComponent,
-    AddProductComponent
+    AddProductComponent,
+    CheckoutComponent
   ],
   imports: [
     BrowserModule,
@@ -37,12 +43,16 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     CommonModule,
     AppRoutingModule,
     RouterModule,
+    HeaderComponent,
     LoginComponent,
     RegisterComponent,
-    HeaderComponent
+    ProfileComponent,
+    OrderConfirmationComponent,
+    OrdersComponent
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    OrderService
   ],
   bootstrap: [AppComponent]
 })

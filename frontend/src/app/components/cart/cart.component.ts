@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CartService } from '../../services/cart.service';
 import { CartItem } from '../../services/cart.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-cart',
@@ -14,7 +15,8 @@ export class CartComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -52,10 +54,12 @@ export class CartComponent implements OnInit {
   }
 
   checkout(): void {
-    // Placeholder for checkout functionality
-    alert('Checkout functionality will be implemented in the future!');
-    // For now, just clear the cart
-    this.cartService.clearCart();
-    this.router.navigate(['/']);
+    if (!this.authService.isLoggedIn()) {
+      // If user is not logged in, redirect to login page
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
+    } else {
+      // If user is logged in, proceed to checkout
+      this.router.navigate(['/checkout']);
+    }
   }
 } 

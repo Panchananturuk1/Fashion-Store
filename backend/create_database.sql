@@ -121,4 +121,17 @@ INSERT INTO products (
   false,
   4.3,
   18
+);
+
+-- Add payment_method column to orders table
+ALTER TABLE orders ADD COLUMN payment_method VARCHAR(20) NOT NULL DEFAULT 'card';
+
+-- Create payment_details table
+CREATE TABLE IF NOT EXISTS payment_details (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT NOT NULL,
+  payment_method VARCHAR(20) NOT NULL,
+  payment_info TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (order_id) REFERENCES orders(id)
 ); 

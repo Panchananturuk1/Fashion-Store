@@ -1,0 +1,91 @@
+.form-label {
+  font-weight: 500;
+}
+
+.card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+.form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.alert-danger {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Payment method styles */
+.payment-option {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.payment-option:hover {
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.payment-option .form-check-input:checked + .form-check-label {
+  font-weight: 600;
+}
+
+.payment-option .form-check-label {
+  cursor: pointer;
+  width: 100%;
+}
+
+.payment-option .form-check-input:checked ~ .form-check-label i {
+  transform: scale(1.2);
+}
+
+.payment-option i {
+  font-size: 1.5rem;
+  transition: transform 0.2s ease;
+}
+
+.card-payment-details, .upi-payment-details {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-top: 15px;
+  background-color: #f9f9f9;
+  animation: slideDown 0.3s ease;
+}
+
+.cod-message {
+  margin-top: 15px;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+} 

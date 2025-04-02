@@ -1,0 +1,183 @@
+<div class="container mt-4">
+  <div class="row">
+    <!-- Order Summary -->
+    <div class="col-lg-4 mb-4">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Order Summary</h5>
+        </div>
+        <div class="card-body p-0">
+          <div *ngFor="let item of cartItems" class="p-3 border-bottom">
+            <div class="row align-items-center">
+              <div class="col-3">
+                <img [src]="item.product.imageUrl" [alt]="item.product.name" class="img-fluid rounded">
+              </div>
+              <div class="col-9">
+                <h6 class="mb-1">{{ item.product.name }}</h6>
+                <div class="small text-muted">
+                  <span class="me-2">Size: {{ item.size }}</span>
+                  <span>Color: {{ item.color }}</span>
+                </div>
+                <div class="small text-muted">Quantity: {{ item.quantity }}</div>
+                <div class="text-primary">{{ (item.product.price * item.quantity) | currency }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="p-3">
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal</span>
+              <span>{{ total | currency }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Shipping</span>
+              <span>Free</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between">
+              <span class="h5 mb-0">Total</span>
+              <span class="h5 mb-0 text-primary">{{ total | currency }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkout Form -->
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Checkout Information</h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
+            <!-- Personal Information -->
+            <h6 class="mb-3">Personal Information</h6>
+            <div class="row mb-4">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" class="form-control" formControlName="firstName">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" class="form-control" formControlName="lastName">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" formControlName="email">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Phone</label>
+                <input type="tel" class="form-control" formControlName="phone">
+              </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <h6 class="mb-3">Shipping Address</h6>
+            <div class="mb-4">
+              <div class="mb-3">
+                <label class="form-label">Address</label>
+                <input type="text" class="form-control" formControlName="address">
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">City</label>
+                  <input type="text" class="form-control" formControlName="city">
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">State</label>
+                  <input type="text" class="form-control" formControlName="state">
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">ZIP Code</label>
+                  <input type="text" class="form-control" formControlName="zipCode">
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Information -->
+            <h6 class="mb-3">Payment Information</h6>
+            <div class="mb-4">
+              <!-- Payment Method Selection -->
+              <div class="mb-3">
+                <label class="form-label">Select Payment Method</label>
+                <div class="d-flex flex-column gap-2">
+                  <div class="form-check payment-option">
+                    <input class="form-check-input" type="radio" formControlName="paymentMethod" id="cardPayment" value="card" checked>
+                    <label class="form-check-label d-flex align-items-center" for="cardPayment">
+                      <i class="bi bi-credit-card me-2 text-primary"></i>
+                      <span>Credit/Debit Card</span>
+                    </label>
+                  </div>
+                  
+                  <div class="form-check payment-option">
+                    <input class="form-check-input" type="radio" formControlName="paymentMethod" id="codPayment" value="cod">
+                    <label class="form-check-label d-flex align-items-center" for="codPayment">
+                      <i class="bi bi-cash me-2 text-success"></i>
+                      <span>Cash on Delivery (COD)</span>
+                    </label>
+                  </div>
+                  
+                  <div class="form-check payment-option">
+                    <input class="form-check-input" type="radio" formControlName="paymentMethod" id="upiPayment" value="upi">
+                    <label class="form-check-label d-flex align-items-center" for="upiPayment">
+                      <i class="bi bi-phone me-2 text-danger"></i>
+                      <span>UPI Payment</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Card Payment Details (shown only when card payment is selected) -->
+              <div *ngIf="checkoutForm.value.paymentMethod === 'card'" class="card-payment-details">
+                <div class="mb-3">
+                  <label class="form-label">Card Number</label>
+                  <input type="text" class="form-control" formControlName="cardNumber" placeholder="1234 5678 9012 3456">
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Expiry Date</label>
+                    <input type="text" class="form-control" formControlName="cardExpiry" placeholder="MM/YY">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">CVV</label>
+                    <input type="text" class="form-control" formControlName="cardCvv" placeholder="123">
+                  </div>
+                </div>
+              </div>
+              
+              <!-- UPI Payment Details (shown only when UPI payment is selected) -->
+              <div *ngIf="checkoutForm.value.paymentMethod === 'upi'" class="upi-payment-details">
+                <div class="mb-3">
+                  <label class="form-label">UPI ID</label>
+                  <input type="text" class="form-control" formControlName="upiId" placeholder="username@upi">
+                </div>
+              </div>
+              
+              <!-- COD Message (shown only when COD is selected) -->
+              <div *ngIf="checkoutForm.value.paymentMethod === 'cod'" class="cod-message alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                Pay with cash upon delivery. Our delivery person will carry a POS machine if you prefer to pay by card.
+              </div>
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="error" class="alert alert-danger mb-4">
+              {{ error }}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary" [disabled]="!checkoutForm.valid || loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                Place Order
+              </button>
+              <button type="button" class="btn btn-outline-secondary" (click)="goBack()">
+                Back to Cart
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
