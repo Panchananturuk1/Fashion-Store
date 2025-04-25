@@ -12,20 +12,11 @@ services:
       - key: PORT
         value: 10000
       - key: POSTGRES_URL
-        fromDatabase:
-          name: fashion-store-db
-          property: connectionString
+        value: postgresql://root:8sIEDzISyEu2abVDLuIo2kXb2KNwCGei@dpg-d05rqvidbo4c73906vm0-a/ecommerce_r8fr
       - key: NODE_ENV
         value: production
       - key: JWT_SECRET
         generateValue: true # This will generate a random value for the JWT secret
-
-# PostgreSQL Database
-databases:
-  - name: fashion-store-db
-    databaseName: fashion_store
-    plan: free # or choose a paid plan for production
-    ipAllowList: [] # only allow internal connections
 
 # Add a job to set up the database after deployment
 jobs:
@@ -36,9 +27,7 @@ jobs:
     startCommand: node src/utils/rebuildProductsTable.js
     envVars:
       - key: POSTGRES_URL
-        fromDatabase:
-          name: fashion-store-db
-          property: connectionString
+        value: postgresql://root:8sIEDzISyEu2abVDLuIo2kXb2KNwCGei@dpg-d05rqvidbo4c73906vm0-a/ecommerce_r8fr
       - key: NODE_ENV
         value: production
       - key: DB_TYPE
