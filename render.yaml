@@ -12,7 +12,7 @@ services:
       - key: PORT
         value: 10000
       - key: POSTGRES_URL
-        value: postgresql://root:8sIEDzISyEu2abVDLuIo2kXb2KNwCGei@dpg-d05rqvidbo4c73906vm0-a/ecommerce_r8fr
+        value: postgresql://root:8sIEDzISyEu2abVDLuIo2kXb2KNwCGei@dpg-d05rqvidbo4c73906vm0-a.oregon-postgres.render.com/ecommerce_r8fr
       - key: NODE_ENV
         value: production
       - key: JWT_SECRET
@@ -27,7 +27,7 @@ jobs:
     startCommand: node src/utils/rebuildProductsTable.js
     envVars:
       - key: POSTGRES_URL
-        value: postgresql://root:8sIEDzISyEu2abVDLuIo2kXb2KNwCGei@dpg-d05rqvidbo4c73906vm0-a/ecommerce_r8fr
+        value: postgresql://root:8sIEDzISyEu2abVDLuIo2kXb2KNwCGei@dpg-d05rqvidbo4c73906vm0-a.oregon-postgres.render.com/ecommerce_r8fr
       - key: NODE_ENV
         value: production
       - key: DB_TYPE
