@@ -7,6 +7,12 @@ const { connectDB } = require('./config/db');
 // Load environment variables
 dotenv.config();
 
+// Set SSL for production environment
+if (process.env.NODE_ENV === 'production') {
+  process.env.PG_SSL = 'true';
+  console.log('Production environment detected - enabling SSL for PostgreSQL');
+}
+
 // Import models
 require('./models/userModel');
 

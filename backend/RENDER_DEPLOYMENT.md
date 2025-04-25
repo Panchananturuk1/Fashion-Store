@@ -19,7 +19,7 @@ This guide will walk you through deploying the Fashion Store backend to Render.c
    - **Root Directory**: `./backend` (if your backend is in a subdirectory)
    - **Environment**: `Node`
    - **Build Command**: `npm install`
-   - **Start Command**: `node render-start.js`
+   - **Start Command**: `node src/index.js`
    - **Plan**: Free (or choose a paid plan for production)
 
 ### Step 2: Set Environment Variables

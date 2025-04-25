@@ -5,7 +5,7 @@ services:
     runtime: node
     rootDir: backend
     buildCommand: npm install
-    startCommand: node render-start.js
+    startCommand: node src/index.js
     envVars:
       - key: DB_TYPE
         value: postgres

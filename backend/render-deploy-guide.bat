@@ -22,7 +22,7 @@ echo.
 echo BUILD SETTINGS:
 echo --------------
 echo Build Command:    npm install
-echo Start Command:    node render-start.js
+echo Start Command:    node src/index.js
 echo.
 echo ENVIRONMENT VARIABLES:
 echo ---------------------
