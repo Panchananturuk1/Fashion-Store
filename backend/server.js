@@ -7,15 +7,14 @@ console.log(`Node Version: ${process.version}`);
 console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 console.log(`Current working directory: ${process.cwd()}`);
 
-// Log all environment variables for debugging (mask sensitive values)
-console.log('Environment variables:');
-Object.keys(process.env).forEach(key => {
-  if (key.includes('PASSWORD') || key.includes('SECRET') || key.includes('URL')) {
-    console.log(`${key}: ******`);
-  } else {
-    console.log(`${key}: ${process.env[key]}`);
-  }
-});
+// Log database configuration environment variables
+console.log('Database configuration:');
+console.log(`DB_TYPE: ${process.env.DB_TYPE || 'not set'}`);
+console.log(`PGHOST: ${process.env.PGHOST || 'not set'}`);
+console.log(`PGDATABASE: ${process.env.PGDATABASE || 'not set'}`);
+console.log(`PGUSER: ${process.env.PGUSER || 'not set'}`);
+console.log(`PGPORT: ${process.env.PGPORT || 'not set'}`);
+console.log(`PGSSL: ${process.env.PGSSL || 'not set'}`);
 
 // Check if the routes directory exists
 const routesDir = path.join(__dirname, 'src', 'routes');
@@ -26,52 +25,6 @@ console.log(`Routes directory exists: ${fs.existsSync(routesDir)}`);
 if (fs.existsSync(routesDir)) {
   const files = fs.readdirSync(routesDir);
   console.log('Files in routes directory:', files);
-}
-
-// Check if PostgreSQL libraries are available
-try {
-  const pg = require('pg');
-  console.log('PostgreSQL module version:', pg.version);
-  
-  const { Sequelize } = require('sequelize');
-  console.log('Sequelize module available');
-} catch (error) {
-  console.error('Error loading PostgreSQL libraries:', error.message);
-}
-
-// Test database connection directly
-if (process.env.POSTGRES_URL) {
-  console.log('Testing PostgreSQL connection...');
-  try {
-    const { Client } = require('pg');
-    const client = new Client({
-      connectionString: process.env.POSTGRES_URL,
-      ssl: {
-        rejectUnauthorized: false
-      }
-    });
-    
-    // Connect to the database
-    console.log('Connecting to PostgreSQL...');
-    client.connect()
-      .then(() => {
-        console.log('PostgreSQL connection successful!');
-        client.query('SELECT NOW()')
-          .then(result => {
-            console.log('PostgreSQL query result:', result.rows[0]);
-            client.end();
-          })
-          .catch(err => {
-            console.error('PostgreSQL query error:', err);
-            client.end();
-          });
-      })
-      .catch(err => {
-        console.error('PostgreSQL connection error:', err);
-      });
-  } catch (error) {
-    console.error('Error in PostgreSQL connection test:', error);
-  }
 }
 
 // Set environment variables

@@ -1,6 +1,5 @@
 const { Sequelize } = require('sequelize');
 const dotenv = require('dotenv');
-const pgConfig = require('./pgConfig');
 const fs = require('fs');
 const path = require('path');
 
@@ -33,23 +32,38 @@ if (dbType === 'postgres') {
       },
       logging: console.log
     });
-  } else if (pgConfig.url) {
-    console.log('Using PostgreSQL with pgConfig URL');
+  } else if (process.env.PGDATABASE && process.env.PGHOST && process.env.PGUSER) {
+    // Use PG* environment variables (Render standard)
+    console.log('Using PostgreSQL with PG* environment variables');
+    console.log(`PostgreSQL Host: ${process.env.PGHOST}`);
+    console.log(`PostgreSQL Database: ${process.env.PGDATABASE}`);
+    console.log(`PostgreSQL User: ${process.env.PGUSER}`);
+    console.log(`PostgreSQL Port: ${process.env.PGPORT || 5432}`);
     
-    // Create Sequelize instance with connection URI from pgConfig
-    sequelize = new Sequelize(pgConfig.url, {
-      dialect: 'postgres',
-      dialectOptions: {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false
-        }
-      },
-      logging: console.log
-    });
+    sequelize = new Sequelize(
+      process.env.PGDATABASE,
+      process.env.PGUSER,
+      process.env.PGPASSWORD,
+      {
+        host: process.env.PGHOST,
+        port: process.env.PGPORT || 5432,
+        dialect: 'postgres',
+        dialectOptions: {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false
+          }
+        },
+        logging: console.log
+      }
+    );
   } else {
-    // Use PostgreSQL configuration with individual parameters
-    console.log('Using PostgreSQL with individual parameters');
+    // Use PostgreSQL configuration from pgConfig
+    console.log('Using PostgreSQL with default configuration');
+    
+    // Import pgConfig only when needed
+    const pgConfig = require('./pgConfig');
+    
     sequelize = new Sequelize(
       pgConfig.database,
       pgConfig.user,
@@ -107,17 +121,25 @@ const connectDB = async () => {
         console.log('Using POSTGRES_URL environment variable');
       } else if (process.env.DATABASE_URL) {
         console.log('Using DATABASE_URL environment variable');
+      } else if (process.env.PGHOST) {
+        console.log('Using PGHOST environment variable');
       }
       
       // Try to check if we can resolve the host
       try {
         const { execSync } = require('child_process');
-        const host = pgConfig.host || process.env.POSTGRES_URL?.split('@')[1]?.split('/')[0]?.split(':')[0];
+        const host = process.env.PGHOST || 
+                    process.env.POSTGRES_URL?.split('@')[1]?.split('/')[0]?.split(':')[0] || 
+                    'localhost';
         
         if (host) {
           console.log(`Attempting to ping database host: ${host}`);
-          const pingResult = execSync(`ping -c 1 ${host}`).toString();
-          console.log('Ping result:', pingResult);
+          try {
+            const pingResult = execSync(`ping -c 1 ${host}`).toString();
+            console.log('Ping result:', pingResult);
+          } catch (pingErr) {
+            console.log(`Cannot ping ${host}: ${pingErr.message}`);
+          }
         }
       } catch (e) {
         console.log('Failed to ping database host:', e.message);
