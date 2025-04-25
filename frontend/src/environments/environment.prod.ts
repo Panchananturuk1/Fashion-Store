@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://your-elastic-beanstalk-url.elasticbeanstalk.com/api'
+  // This can be updated when you deploy your backend to Render
+  apiUrl: process.env['RENDER_API_URL'] || 'https://your-backend-api-url.onrender.com/api'
 }; 
