@@ -2,8 +2,9 @@ services:
   - type: web
     name: fashion-store-frontend
     env: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: ./frontend/dist/fashion-store
+    rootDir: frontend
+    buildCommand: chmod +x render-build.sh && ./render-build.sh
+    staticPublishPath: dist/fashion-store
     routes:
       - type: rewrite
         source: /*
