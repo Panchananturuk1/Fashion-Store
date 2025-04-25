@@ -1,15 +1,16 @@
 services:
   # Backend API service
   - type: web
-    name: fashion-store-backend
-    env: node
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && npm run render-start
+    name: fashion-store-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node src/index.js
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: DB_TYPE
         value: postgres
+      - key: PORT
+        value: 10000
       - key: PG_HOST
         fromDatabase:
           name: fashion-store-db
@@ -30,29 +31,42 @@ services:
         fromDatabase:
           name: fashion-store-db
           property: port
-      - key: PG_SSL
-        value: true
       - key: JWT_SECRET
-        generateValue: true
-      - key: PORT
-        value: 5001
-
-  # Frontend service
-  - type: web
-    name: fashion-store-frontend
-    env: node
-    buildCommand: cd frontend && npm install && npm run build
-    startCommand: cd frontend && npm run start
-    envVars:
+        generateValue: true # This will generate a random value for the JWT secret
       - key: NODE_ENV
         value: production
-      - key: REACT_APP_API_URL
-        fromService:
-          type: web
-          name: fashion-store-backend
-          envVarKey: RENDER_EXTERNAL_URL
 
-# PostgreSQL database
+# PostgreSQL Database
 databases:
   - name: fashion-store-db
-    plan: starter 
+    databaseName: fashion_store
+    plan: free # or choose a paid plan for production
+
+# Add a job to set up the database after deployment
+jobs:
+  - name: database-setup
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node src/utils/rebuildProductsTable.js
+    envVars:
+      - key: PG_HOST
+        fromDatabase:
+          name: fashion-store-db
+          property: host
+      - key: PG_USER
+        fromDatabase:
+          name: fashion-store-db
+          property: user
+      - key: PG_PASSWORD
+        fromDatabase:
+          name: fashion-store-db
+          property: password
+      - key: PG_DATABASE
+        fromDatabase:
+          name: fashion-store-db
+          property: database
+      - key: PG_PORT
+        fromDatabase:
+          name: fashion-store-db
+          property: port 
