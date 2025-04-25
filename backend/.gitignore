@@ -39,10 +39,11 @@ Thumbs.db
 # Coverage reports
 coverage/
 
-# Compiled output
-*.js
-*.js.map
-*.d.ts
+# Don't ignore important root JS files needed for runtime
+!*.js
+!src/**/*.js
+!render-start.js
+!start-with-pg.js
 
 # Miscellaneous
 npm-debug.log*
