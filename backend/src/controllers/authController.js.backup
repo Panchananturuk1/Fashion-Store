@@ -134,12 +134,17 @@ const updateProfile = async (req, res) => {
     }
 
     // Update basic info with a simpler approach
-    const { name, email } = req.body;
+    const { name, email, phone, street, city, state, zip_code } = req.body;
     
-    // Build the update object with only core fields
+    // Build the update object with only provided fields
     const updates = {};
     
     if (name) updates.name = name;
+    if (phone !== undefined) updates.phone = phone;
+    if (street !== undefined) updates.street = street;
+    if (city !== undefined) updates.city = city;
+    if (state !== undefined) updates.state = state;
+    if (zip_code !== undefined) updates.zip_code = zip_code;
     
     // Only check email uniqueness if it's changing
     if (email && email !== user.email) {
@@ -148,26 +153,6 @@ const updateProfile = async (req, res) => {
         return res.status(400).json({ message: 'Email already in use' });
       }
       updates.email = email;
-    }
-
-    // Add optional fields if they exist in the database
-    try {
-      // Get the field names from the user model
-      const userAttributes = User.getAttributes();
-      const fieldNames = Object.keys(userAttributes);
-      console.log('Available fields:', fieldNames);
-      
-      // Check each optional field
-      const { phone, street, city, state, zip_code } = req.body;
-      
-      if (fieldNames.includes('phone') && phone !== undefined) updates.phone = phone;
-      if (fieldNames.includes('street') && street !== undefined) updates.street = street;
-      if (fieldNames.includes('city') && city !== undefined) updates.city = city;
-      if (fieldNames.includes('state') && state !== undefined) updates.state = state;
-      if (fieldNames.includes('zip_code') && zip_code !== undefined) updates.zip_code = zip_code;
-    } catch (schemaError) {
-      console.error('Error checking schema:', schemaError);
-      // Continue with basic fields only
     }
 
     console.log('Updating user with:', updates);

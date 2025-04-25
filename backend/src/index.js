@@ -16,8 +16,27 @@ connectDB();
 // Import routes
 const productRoutes = require('./routes/productRoutes');
 const authRoutes = require('./routes/authRoutes');
-const orderRoutes = require('./routes/orderRoutes');
 
+// Use the appropriate order routes based on database type
+let orderRoutes;
+const dbType = process.env.DB_TYPE || 'mysql';
+
+try {
+  if (dbType === 'postgres') {
+    orderRoutes = require('./routes/orderRoutes-pg');
+    console.log('Using PostgreSQL order routes');
+  } else {
+    orderRoutes = require('./routes/orderRoutes');
+    console.log('Using MySQL order routes');
+  }
+} catch (error) {
+  console.error(`Error loading order routes for ${dbType}:`, error.message);
+  console.log('Falling back to standard order routes');
+  // Fallback to standard routes
+  orderRoutes = require('./routes/orderRoutes');
+}
+
+// Create express app
 const app = express();
 const PORT = process.env.PORT || 5001;
 
@@ -37,6 +56,16 @@ app.get('/', (req, res) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT} - Using Node ${process.version}`);
+})
+.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Please close the other application or use a different port.`);
+    console.log('Try running the restart-server.ps1 script to automatically handle this.');
+    process.exit(1);
+  } else {
+    console.error('Server failed to start:', error.message);
+    process.exit(1);
+  }
 }); 

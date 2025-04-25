@@ -8,9 +8,17 @@
     "dev": "nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "init-db": "node src/database/initDb.js",
-    "run-migrations": "node src/database/runMigration.js"
+    "run-migrations": "node src/database/runMigration.js",
+    "start:pg": "node start-with-pg.js",
+    "dev:pg": "nodemon start-with-pg.js",
+    "test:pg": "node src/utils/testPgConnection.js",
+    "init:pg": "node src/utils/postgresInit.js",
+    "view:pg": "node src/utils/viewPgData.js",
+    "add-data:pg": "node src/utils/addMoreSampleData.js",
+    "render-start": "node render-start.js"
   },
   "dependencies": {
+    "axios": "^1.9.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -18,9 +26,14 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mysql2": "^3.2.0",
-    "sequelize": "^6.31.0"
+    "pg": "^8.15.5",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

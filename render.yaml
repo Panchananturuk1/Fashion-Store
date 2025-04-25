@@ -1,15 +1,58 @@
 services:
+  # Backend API service
+  - type: web
+    name: fashion-store-backend
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm run render-start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_TYPE
+        value: postgres
+      - key: PG_HOST
+        fromDatabase:
+          name: fashion-store-db
+          property: host
+      - key: PG_USER
+        fromDatabase:
+          name: fashion-store-db
+          property: user
+      - key: PG_PASSWORD
+        fromDatabase:
+          name: fashion-store-db
+          property: password
+      - key: PG_DATABASE
+        fromDatabase:
+          name: fashion-store-db
+          property: database
+      - key: PG_PORT
+        fromDatabase:
+          name: fashion-store-db
+          property: port
+      - key: PG_SSL
+        value: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 5001
+
+  # Frontend service
   - type: web
     name: fashion-store-frontend
-    env: static
-    rootDir: frontend
-    buildCommand: npm ci && npx ng build --configuration production
-    staticPublishPath: dist/fashion-store
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: no-cache 
+    env: node
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: fashion-store-backend
+          envVarKey: RENDER_EXTERNAL_URL
+
+# PostgreSQL database
+databases:
+  - name: fashion-store-db
+    plan: starter 
