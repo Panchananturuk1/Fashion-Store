@@ -39,10 +39,12 @@ Thumbs.db
 # Coverage reports
 coverage/
 
-# Don't ignore important root JS files needed for runtime
+# IMPORTANT: Make sure key JavaScript files are NOT ignored
 !*.js
 !src/**/*.js
+!src/routes/*.js
 !render-start.js
+!server.js
 !start-with-pg.js
 
 # Miscellaneous
