@@ -5,7 +5,7 @@ services:
     runtime: node
     rootDir: backend
     buildCommand: npm install
-    startCommand: node src/index.js
+    startCommand: node render-start.js
     envVars:
       - key: DB_TYPE
         value: postgres
@@ -31,6 +31,8 @@ services:
         fromDatabase:
           name: fashion-store-db
           property: port
+      - key: PG_SSL
+        value: "true"
       - key: JWT_SECRET
         generateValue: true # This will generate a random value for the JWT secret
       - key: NODE_ENV
@@ -69,4 +71,8 @@ jobs:
       - key: PG_PORT
         fromDatabase:
           name: fashion-store-db
-          property: port 
+          property: port
+      - key: PG_SSL
+        value: "true"
+      - key: DB_TYPE
+        value: postgres 

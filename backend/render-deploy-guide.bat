@@ -22,7 +22,7 @@ echo.
 echo BUILD SETTINGS:
 echo --------------
 echo Build Command:    npm install
-echo Start Command:    node src/index.js
+echo Start Command:    node render-start.js
 echo.
 echo ENVIRONMENT VARIABLES:
 echo ---------------------
@@ -33,6 +33,7 @@ echo PG_USER=[Your PostgreSQL Username]
 echo PG_PASSWORD=[Your PostgreSQL Password]
 echo PG_DATABASE=fashion_store
 echo PG_PORT=5432
+echo PG_SSL=true
 echo JWT_SECRET=[Your Secret Key for JWT]
 echo.
 echo DATABASE SETUP:

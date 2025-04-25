@@ -19,7 +19,7 @@ This guide will walk you through deploying the Fashion Store backend to Render.c
    - **Root Directory**: `./backend` (if your backend is in a subdirectory)
    - **Environment**: `Node`
    - **Build Command**: `npm install`
-   - **Start Command**: `node src/index.js`
+   - **Start Command**: `node render-start.js`
    - **Plan**: Free (or choose a paid plan for production)
 
 ### Step 2: Set Environment Variables
@@ -34,6 +34,7 @@ PG_USER=[Your PostgreSQL Username]
 PG_PASSWORD=[Your PostgreSQL Password]
 PG_DATABASE=fashion_store
 PG_PORT=5432
+PG_SSL=true
 JWT_SECRET=[Your Secret Key for JWT]
 NODE_ENV=production
 ```
