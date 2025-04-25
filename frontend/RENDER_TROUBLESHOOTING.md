@@ -6,6 +6,20 @@ If you're encountering issues deploying your Angular application to Render, foll
 
 ### Build Failures
 
+**Issue: Script Not Found Error**
+```
+chmod: cannot access 'render-build.sh': No such file or directory
+```
+
+**Solutions:**
+1. **Use direct build commands** instead of scripts:
+   - Change your render.yaml to use: `npm ci && npx ng build --configuration production`
+   - This avoids file permission and location issues
+
+2. **Path issues**:
+   - If using a script, ensure it's in the correct directory relative to `rootDir`
+   - Scripts should be in the directory specified by `rootDir` in render.yaml
+
 **Issue: Angular CLI Build Errors**
 ```
 Error with the Angular CLI during build process
