@@ -1,7 +1,7 @@
 // Import Product model
 const Product = require('../models/productModel');
 const { Op } = require('sequelize');
-const { sequelize } = require('../config/db');
+const { sequelize } = require('../config/sequelize');
 
 // Get database type
 const dbType = process.env.DB_TYPE || 'mysql';

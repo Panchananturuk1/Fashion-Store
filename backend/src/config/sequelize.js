@@ -15,6 +15,10 @@ if (!process.env.DATABASE_URL) {
   console.warn('Running in development mode, will attempt to use default configuration');
 }
 
+// Determine if we need SSL (only in production)
+const useSSL = process.env.NODE_ENV === 'production';
+console.log(`SSL for PostgreSQL: ${useSSL ? 'Enabled' : 'Disabled'}`);
+
 // Create Sequelize instance using DATABASE_URL if available
 const sequelize = process.env.DATABASE_URL
   ? new Sequelize(process.env.DATABASE_URL, {
@@ -22,10 +26,10 @@ const sequelize = process.env.DATABASE_URL
       protocol: 'postgres',
       logging: false,
       dialectOptions: {
-        ssl: {
+        ssl: useSSL ? {
           require: true,
           rejectUnauthorized: false
-        }
+        } : false
       }
     })
   : new Sequelize(

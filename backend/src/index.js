@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
-const { connectDB } = require('./config/sequelize');
+const { connectDB } = require('./config/db-fixed');
 const path = require('path');
 const fs = require('fs');
 

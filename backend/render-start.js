@@ -1,25 +1,27 @@
-// Special startup script for Render.com deployment
-require('dotenv').config();
+// This script sets environment variables for Render deployment
+// and then runs the application
 
-// Log environment for debugging
-console.log('Starting Fashion Store backend on Render...');
-console.log(`Node Version: ${process.version}`);
+// Set environment variables before anything else
+process.env.DB_TYPE = 'postgres';
+process.env.PG_SSL = 'true';
+process.env.NODE_ENV = 'production';
+
+// Log startup
+console.log('Starting application with Render PostgreSQL database...');
+console.log(`Node.js version: ${process.version}`);
 console.log(`Environment: ${process.env.NODE_ENV}`);
-console.log(`Database Type: ${process.env.DB_TYPE}`);
-console.log(`Port: ${process.env.PORT}`);
+console.log(`Database type: ${process.env.DB_TYPE}`);
+console.log(`SSL enabled: ${process.env.PG_SSL}`);
 
-if (process.env.DB_TYPE === 'postgres') {
-  console.log('Using PostgreSQL database');
-  console.log(`PostgreSQL Host: ${process.env.PG_HOST}`);
-  console.log(`PostgreSQL Database: ${process.env.PG_DATABASE}`);
-  console.log(`PostgreSQL User: ${process.env.PG_USER}`);
-  console.log(`PostgreSQL Port: ${process.env.PG_PORT}`);
+// Check if DATABASE_URL is set
+if (!process.env.DATABASE_URL && !process.env.POSTGRES_URL) {
+  console.error('⚠️  Warning: No DATABASE_URL or POSTGRES_URL found in environment');
+  console.error('Make sure you have the correct connection string in your environment variables');
+  console.error('The application may not be able to connect to the database');
+} else {
+  const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+  console.log('Using database URL:', dbUrl.replace(/:[^:]*@/, ':****@'));
 }
 
-// Force SSL for production
-if (process.env.NODE_ENV === 'production') {
-  process.env.PG_SSL = 'true';
-}
-
-// Start the application
-require('./src/index.js'); 
+// Import the application
+require('./src/index'); 

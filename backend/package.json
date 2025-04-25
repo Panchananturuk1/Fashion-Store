@@ -15,7 +15,8 @@
     "init:pg": "node src/utils/postgresInit.js",
     "view:pg": "node src/utils/viewPgData.js",
     "add-data:pg": "node src/utils/addMoreSampleData.js",
-    "render-start": "node render-start.js"
+    "render-start": "node render-start.js",
+    "render-init": "node render-init.js"
   },
   "dependencies": {
     "axios": "^1.9.0",
