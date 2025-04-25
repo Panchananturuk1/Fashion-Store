@@ -13,18 +13,8 @@ services:
         value: 10000
       - key: NODE_ENV
         value: production
-      - key: PGHOST
-        value: dpg-d05rqvidbo4c73906vm0-a.oregon-postgres.render.com
-      - key: PGUSER
-        value: root
-      - key: PGPASSWORD
-        value: 8sIEDzISyEu2abVDLuIo2kXb2KNwCGei
-      - key: PGDATABASE
-        value: ecommerce_r8fr
-      - key: PGPORT
-        value: 5432
-      - key: PGSSL
-        value: "true"
+      - key: DATABASE_URL
+        value: postgresql://root:8sIEDzISyEu2abVDLuIo2kXb2KNwCGei@dpg-d05rqvidbo4c73906vm0-a.oregon-postgres.render.com/ecommerce_r8fr
       - key: JWT_SECRET
         generateValue: true # This will generate a random value for the JWT secret
 
@@ -40,15 +30,5 @@ jobs:
         value: postgres
       - key: NODE_ENV
         value: production
-      - key: PGHOST
-        value: dpg-d05rqvidbo4c73906vm0-a.oregon-postgres.render.com
-      - key: PGUSER
-        value: root
-      - key: PGPASSWORD
-        value: 8sIEDzISyEu2abVDLuIo2kXb2KNwCGei
-      - key: PGDATABASE
-        value: ecommerce_r8fr
-      - key: PGPORT
-        value: 5432
-      - key: PGSSL
-        value: "true" 
+      - key: DATABASE_URL
+        value: postgresql://root:8sIEDzISyEu2abVDLuIo2kXb2KNwCGei@dpg-d05rqvidbo4c73906vm0-a.oregon-postgres.render.com/ecommerce_r8fr 

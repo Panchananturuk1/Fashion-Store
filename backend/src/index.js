@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
-const { connectDB } = require('./config/db');
+const { connectDB } = require('./config/sequelize');
 const path = require('path');
 const fs = require('fs');
 
@@ -34,9 +34,17 @@ try {
 
 // Connect to database
 try {
-  connectDB();
+  connectDB().then(connected => {
+    if (!connected && process.env.NODE_ENV === 'production') {
+      console.error('Failed to connect to database in production - exiting');
+      process.exit(1);
+    }
+  });
 } catch (error) {
   console.error('Error connecting to database:', error.message);
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
 }
 
 // Import routes

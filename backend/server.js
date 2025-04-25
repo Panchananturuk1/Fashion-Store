@@ -10,11 +10,7 @@ console.log(`Current working directory: ${process.cwd()}`);
 // Log database configuration environment variables
 console.log('Database configuration:');
 console.log(`DB_TYPE: ${process.env.DB_TYPE || 'not set'}`);
-console.log(`PGHOST: ${process.env.PGHOST || 'not set'}`);
-console.log(`PGDATABASE: ${process.env.PGDATABASE || 'not set'}`);
-console.log(`PGUSER: ${process.env.PGUSER || 'not set'}`);
-console.log(`PGPORT: ${process.env.PGPORT || 'not set'}`);
-console.log(`PGSSL: ${process.env.PGSSL || 'not set'}`);
+console.log(`DATABASE_URL: ${process.env.DATABASE_URL ? '******' : 'not set'}`);
 
 // Check if the routes directory exists
 const routesDir = path.join(__dirname, 'src', 'routes');
@@ -29,8 +25,14 @@ if (fs.existsSync(routesDir)) {
 
 // Set environment variables
 if (process.env.NODE_ENV === 'production') {
-  process.env.PG_SSL = 'true';
-  console.log('Production environment detected - enabling SSL for PostgreSQL');
+  console.log('Production environment detected');
+  
+  if (!process.env.DATABASE_URL) {
+    console.error('ERROR: DATABASE_URL environment variable is not set in production!');
+    process.exit(1);
+  } else {
+    console.log('DATABASE_URL is set correctly');
+  }
 }
 
 try {
