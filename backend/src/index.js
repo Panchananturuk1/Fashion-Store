@@ -15,6 +15,12 @@ if (process.env.NODE_ENV === 'production') {
   console.log('Production environment detected - enabling SSL for PostgreSQL');
 }
 
+// Set DATABASE_URL from SUPABASE_POSTGRES_URL if available
+if (process.env.SUPABASE_POSTGRES_URL && !process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = process.env.SUPABASE_POSTGRES_URL;
+  console.log('Setting DATABASE_URL from SUPABASE_POSTGRES_URL');
+}
+
 // Debug route files
 const routesDir = path.join(__dirname, 'routes');
 console.log(`Routes directory absolute path: ${routesDir}`);
@@ -73,7 +79,8 @@ const dbType = process.env.DB_TYPE || 'mysql';
 console.log(`Using database type: ${dbType}`);
 
 try {
-  if (dbType === 'postgres') {
+  // For both Postgres and Supabase, use the PostgreSQL routes
+  if (dbType === 'postgres' || dbType === 'supabase') {
     // Check if the file exists first
     const pgRoutesPath = path.join(__dirname, 'routes', 'orderRoutes-pg.js');
     console.log(`PostgreSQL routes path: ${pgRoutesPath}`);
@@ -81,12 +88,19 @@ try {
     
     if (fs.existsSync(pgRoutesPath)) {
       orderRoutes = require('./routes/orderRoutes-pg');
-      console.log('Using PostgreSQL order routes');
+      console.log(`Using PostgreSQL order routes for ${dbType}`);
     } else {
-      throw new Error('PostgreSQL routes file does not exist');
+      // Fall back to regular routes if PG version doesn't exist
+      const mysqlRoutesPath = path.join(__dirname, 'routes', 'orderRoutes.js');
+      if (fs.existsSync(mysqlRoutesPath)) {
+        orderRoutes = require('./routes/orderRoutes');
+        console.log(`PostgreSQL routes not found, using standard routes for ${dbType}`);
+      } else {
+        throw new Error('No suitable order routes file found');
+      }
     }
   } else {
-    // Check if the file exists first
+    // Default to MySQL routes
     const mysqlRoutesPath = path.join(__dirname, 'routes', 'orderRoutes.js');
     console.log(`MySQL routes path: ${mysqlRoutesPath}`);
     console.log(`MySQL routes file exists: ${fs.existsSync(mysqlRoutesPath)}`);

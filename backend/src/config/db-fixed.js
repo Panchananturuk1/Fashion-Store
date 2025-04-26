@@ -16,7 +16,50 @@ const dbType = process.env.DB_TYPE || 'mysql';
 console.log('Initializing Sequelize connection...');
 console.log(`SSL for PostgreSQL: ${process.env.PG_SSL === 'true' ? 'Enabled' : 'Disabled'}`);
 
-if (dbType === 'postgres') {
+if (dbType === 'supabase') {
+  // Use Supabase PostgreSQL configuration
+  if (process.env.SUPABASE_POSTGRES_URL) {
+    console.log('Using SUPABASE_POSTGRES_URL for Sequelize connection');
+    const connectionString = process.env.SUPABASE_POSTGRES_URL;
+    
+    // Log connection string (with masked password)
+    console.log('Connection string format:', connectionString.replace(/:[^:]*@/, ':****@'));
+    
+    // Create Sequelize instance with connection URI
+    sequelize = new Sequelize(connectionString, {
+      dialect: 'postgres',
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false
+        }
+      },
+      logging: false
+    });
+    console.log('Using Supabase PostgreSQL configuration');
+  } else {
+    // Try to load from supabase-config
+    try {
+      const supabaseConfig = require('../../supabase-config');
+      console.log('Using Supabase config from supabase-config.js');
+      
+      sequelize = new Sequelize(supabaseConfig.SUPABASE_POSTGRES_URL, {
+        dialect: 'postgres',
+        dialectOptions: {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false
+          }
+        },
+        logging: false
+      });
+      console.log('Using Supabase PostgreSQL configuration from config file');
+    } catch (error) {
+      console.error('Error loading Supabase configuration:', error.message);
+      throw new Error('Supabase configuration not found or invalid');
+    }
+  }
+} else if (dbType === 'postgres') {
   // Use PostgreSQL configuration
   if (process.env.POSTGRES_URL || process.env.DATABASE_URL) {
     console.log('Using DATABASE_URL for Sequelize connection');
@@ -119,13 +162,15 @@ const connectDB = async () => {
   } catch (error) {
     console.error('Unable to connect to the database:', error);
     
-    if (dbType === 'postgres') {
+    if (dbType === 'postgres' || dbType === 'supabase') {
       // Log more debug information for PostgreSQL
       console.log('PostgreSQL connection error details:');
       if (process.env.POSTGRES_URL) {
         console.log('Using POSTGRES_URL environment variable');
       } else if (process.env.DATABASE_URL) {
         console.log('Using DATABASE_URL environment variable');
+      } else if (process.env.SUPABASE_POSTGRES_URL) {
+        console.log('Using SUPABASE_POSTGRES_URL environment variable');
       } else if (process.env.PGHOST) {
         console.log('Using PGHOST environment variable');
       }
@@ -133,9 +178,15 @@ const connectDB = async () => {
       // Try to check if we can resolve the host
       try {
         const { execSync } = require('child_process');
-        const host = process.env.PGHOST || 
-                    process.env.POSTGRES_URL?.split('@')[1]?.split('/')[0]?.split(':')[0] || 
-                    'localhost';
+        let host;
+        
+        if (dbType === 'supabase' && process.env.SUPABASE_POSTGRES_URL) {
+          host = process.env.SUPABASE_POSTGRES_URL.split('@')[1]?.split('/')[0]?.split(':')[0];
+        } else {
+          host = process.env.PGHOST || 
+                process.env.POSTGRES_URL?.split('@')[1]?.split('/')[0]?.split(':')[0] || 
+                'localhost';
+        }
         
         if (host) {
           console.log(`Attempting to ping database host: ${host}`);
