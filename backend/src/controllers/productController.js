@@ -5,7 +5,9 @@ const { sequelize } = require('../config/sequelize');
 
 // Get database type
 const dbType = process.env.DB_TYPE || 'mysql';
-const isPostgres = dbType === 'postgres';
+const isPostgres = dbType === 'postgres' || dbType === 'supabase'; // Add supabase as postgres type
+
+console.log(`ProductController initialized with database type: ${dbType}, isPostgres: ${isPostgres}`);
 
 // Helper to map database fields to model fields (for PostgreSQL compatibility)
 const mapProductFields = (product) => {
@@ -35,6 +37,8 @@ const mapProductFields = (product) => {
 // Get all products
 const getProducts = async (req, res) => {
   try {
+    console.log('getProducts called with database type:', dbType);
+    
     const { category } = req.query;
     
     let whereClause = {};
@@ -46,58 +50,95 @@ const getProducts = async (req, res) => {
     
     if (isPostgres) {
       // Use raw query for PostgreSQL
-      console.log('Getting all products' + (category ? ` in category: ${category}` : ''));
+      console.log('Using PostgreSQL raw query for products' + (category ? ` in category: ${category}` : ''));
       
-      const query = category 
-        ? 'SELECT * FROM products WHERE category = $1'
-        : 'SELECT * FROM products';
-      
-      const values = category ? [category] : [];
-      const result = await sequelize.query(query, {
-        bind: values, // Use bind instead of replacements for PostgreSQL
-        type: sequelize.QueryTypes.SELECT
-      });
-      
-      products = result.map(mapProductFields);
+      try {
+        // First check if the products table exists
+        const tableCheck = await sequelize.query(
+          "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'products')",
+          { type: sequelize.QueryTypes.SELECT }
+        );
+        
+        console.log('Table check result:', tableCheck);
+        
+        // If table doesn't exist, return empty array
+        if (!tableCheck[0].exists) {
+          console.log('Products table does not exist in the database');
+          return res.status(200).json([]);
+        }
+        
+        // If it exists, query the products
+        const query = category 
+          ? 'SELECT * FROM products WHERE category = $1'
+          : 'SELECT * FROM products';
+        
+        const values = category ? [category] : [];
+        
+        console.log('Executing query:', query, 'with values:', values);
+        
+        const result = await sequelize.query(query, {
+          bind: values,
+          type: sequelize.QueryTypes.SELECT
+        });
+        
+        console.log(`Query returned ${result.length} products`);
+        products = result.map(mapProductFields);
+      } catch (queryError) {
+        console.error('PostgreSQL query error:', queryError);
+        throw queryError;
+      }
     } else {
       // Use Sequelize for MySQL
+      console.log('Using Sequelize ORM for MySQL products');
       products = await Product.findAll({
         where: whereClause
       });
+      console.log(`Found ${products.length} products`);
     }
     
     res.status(200).json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    console.error('Error details:', error.stack);
+    res.status(500).json({ message: 'Server Error', error: error.message, stack: error.stack });
   }
 };
 
 // Get a single product by ID
 const getProductById = async (req, res) => {
   try {
+    console.log(`getProductById called with id: ${req.params.id}, database type: ${dbType}`);
+    
     const productId = req.params.id;
     let product;
     
     if (isPostgres) {
       // Use raw query for PostgreSQL
-      console.log(`Getting product with ID: ${productId}`);
+      console.log(`Getting product with ID: ${productId} using PostgreSQL raw query`);
       
-      const result = await sequelize.query(
-        'SELECT * FROM products WHERE id = $1',
-        {
-          bind: [productId], // Use bind instead of replacements for PostgreSQL
-          type: sequelize.QueryTypes.SELECT
+      try {
+        const result = await sequelize.query(
+          'SELECT * FROM products WHERE id = $1',
+          {
+            bind: [productId],
+            type: sequelize.QueryTypes.SELECT
+          }
+        );
+        
+        console.log(`Query returned ${result.length} results`);
+        
+        if (result.length === 0) {
+          return res.status(404).json({ message: 'Product not found' });
         }
-      );
-      
-      if (result.length === 0) {
-        return res.status(404).json({ message: 'Product not found' });
+        
+        product = mapProductFields(result[0]);
+      } catch (queryError) {
+        console.error('PostgreSQL query error:', queryError);
+        throw queryError;
       }
-      
-      product = mapProductFields(result[0]);
     } else {
       // Use Sequelize for MySQL
+      console.log(`Getting product with ID: ${productId} using Sequelize ORM`);
       product = await Product.findByPk(productId);
       
       if (!product) {
@@ -108,7 +149,8 @@ const getProductById = async (req, res) => {
     res.status(200).json(product);
   } catch (error) {
     console.error('Error fetching product:', error);
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    console.error('Error details:', error.stack);
+    res.status(500).json({ message: 'Server Error', error: error.message, stack: error.stack });
   }
 };
 

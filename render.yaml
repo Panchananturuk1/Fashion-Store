@@ -27,7 +27,7 @@ jobs:
     startCommand: node src/utils/rebuildProductsTable.js
     envVars:
       - key: DB_TYPE
-        value: postgres
+        value: postgres 
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL

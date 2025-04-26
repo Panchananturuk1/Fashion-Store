@@ -6,8 +6,18 @@ dotenv.config();
 
 console.log('Initializing Sequelize connection...');
 
-// Check if DATABASE_URL is available
-if (!process.env.DATABASE_URL) {
+// Determine database type
+const dbType = process.env.DB_TYPE || 'mysql';
+console.log(`Database type: ${dbType}`);
+
+// Set DATABASE_URL from SUPABASE_POSTGRES_URL if available
+if (process.env.SUPABASE_POSTGRES_URL && !process.env.DATABASE_URL && dbType === 'supabase') {
+  process.env.DATABASE_URL = process.env.SUPABASE_POSTGRES_URL;
+  console.log('Setting DATABASE_URL from SUPABASE_POSTGRES_URL');
+}
+
+// Check for database connection string
+if (!process.env.DATABASE_URL && (dbType === 'postgres' || dbType === 'supabase')) {
   console.error('ERROR: DATABASE_URL environment variable is not set!');
   if (process.env.NODE_ENV === 'production') {
     process.exit(1);
@@ -15,43 +25,73 @@ if (!process.env.DATABASE_URL) {
   console.warn('Running in development mode, will attempt to use default configuration');
 }
 
-// Determine if we need SSL (only in production)
-const useSSL = process.env.NODE_ENV === 'production';
+// Determine if we need SSL (only in production or explicitly set)
+const useSSL = process.env.PG_SSL === 'true' || process.env.NODE_ENV === 'production';
 console.log(`SSL for PostgreSQL: ${useSSL ? 'Enabled' : 'Disabled'}`);
 
-// Create Sequelize instance using DATABASE_URL if available
-const sequelize = process.env.DATABASE_URL
-  ? new Sequelize(process.env.DATABASE_URL, {
-      dialect: 'postgres',
-      protocol: 'postgres',
-      logging: false,
-      dialectOptions: {
-        ssl: useSSL ? {
-          require: true,
-          rejectUnauthorized: false
-        } : false
-      }
-    })
-  : new Sequelize(
-      process.env.DB_NAME || 'ecommerce',
-      process.env.DB_USER || 'root',
-      process.env.DB_PASSWORD || '',
-      {
-        host: process.env.DB_HOST || 'localhost',
-        dialect: process.env.DB_TYPE === 'postgres' ? 'postgres' : 'mysql',
-        port: process.env.DB_TYPE === 'postgres' ? 5432 : 3306,
-        logging: false
-      }
-    );
+// Create Sequelize instance
+let sequelize;
 
-console.log(`Using ${process.env.DATABASE_URL ? 'DATABASE_URL' : 'default configuration'} for Sequelize connection`);
+if (dbType === 'supabase') {
+  // Use Supabase PostgreSQL
+  if (!process.env.SUPABASE_POSTGRES_URL && !process.env.DATABASE_URL) {
+    throw new Error('Supabase PostgreSQL URL not found! Set SUPABASE_POSTGRES_URL environment variable.');
+  }
+  
+  const connectionString = process.env.SUPABASE_POSTGRES_URL || process.env.DATABASE_URL;
+  console.log('Connection string format:', connectionString.replace(/:[^:]*@/, ':****@'));
+  
+  sequelize = new Sequelize(connectionString, {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
+  });
+  console.log('Using Supabase PostgreSQL configuration');
+} else if (dbType === 'postgres' || process.env.DATABASE_URL) {
+  // Use PostgreSQL with DATABASE_URL
+  const connectionString = process.env.DATABASE_URL;
+  console.log('Connection string format:', connectionString?.replace(/:[^:]*@/, ':****@'));
+  
+  sequelize = new Sequelize(connectionString, {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    logging: false,
+    dialectOptions: {
+      ssl: useSSL ? {
+        require: true,
+        rejectUnauthorized: false
+      } : false
+    }
+  });
+  console.log('Using PostgreSQL configuration');
+} else {
+  // Default to MySQL
+  sequelize = new Sequelize(
+    process.env.DB_NAME || 'ecommerce',
+    process.env.DB_USER || 'root',
+    process.env.DB_PASSWORD || '',
+    {
+      host: process.env.DB_HOST || 'localhost',
+      dialect: 'mysql',
+      port: 3306,
+      logging: false
+    }
+  );
+  console.log('Using MySQL configuration');
+}
 
 // Test connection function
 const connectDB = async () => {
   try {
     console.log('Attempting to connect to database...');
     await sequelize.authenticate();
-    console.log(`Connected to database successfully!`);
+    console.log(`Connected to database successfully! (${dbType})`);
     
     // Sync all defined models to the DB without dropping tables
     await sequelize.sync({ force: false });

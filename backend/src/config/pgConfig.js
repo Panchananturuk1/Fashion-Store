@@ -25,13 +25,13 @@ if (process.env.POSTGRES_URL || process.env.DATABASE_URL) {
       host: config.host,
       port: parseInt(config.port) || 5432,
       logging: process.env.PG_LOGGING === 'true',
-      dialectOptions: {
+  dialectOptions: {
         ssl: {
-          require: true,
+      require: true,
           rejectUnauthorized: false
         }
-      },
-      pool: {
+  },
+  pool: {
         max: parseInt(process.env.PG_POOL_MAX || 5),
         min: parseInt(process.env.PG_POOL_MIN || 0),
         acquire: parseInt(process.env.PG_POOL_ACQUIRE || 30000),
@@ -68,9 +68,9 @@ if (process.env.POSTGRES_URL || process.env.DATABASE_URL) {
       min: parseInt(process.env.PG_POOL_MIN || 0),
       acquire: parseInt(process.env.PG_POOL_ACQUIRE || 30000),
       idle: parseInt(process.env.PG_POOL_IDLE || 10000)
-    }
-  };
-  
+  }
+};
+
   console.log(`PostgreSQL Configuration: ${pgConfig.host}:${pgConfig.port}/${pgConfig.database}`);
 }
 

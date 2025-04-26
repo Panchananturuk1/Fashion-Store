@@ -27,6 +27,10 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  isAdmin: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
   role: {
     type: DataTypes.ENUM('user', 'admin'),
     defaultValue: 'user'
@@ -61,6 +65,11 @@ const User = sequelize.define('User', {
       if (user.password) {
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(user.password, salt);
+      }
+      
+      // Set role based on isAdmin
+      if (user.isAdmin) {
+        user.role = 'admin';
       }
     }
   }

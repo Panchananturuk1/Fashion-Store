@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { sequelize } = require('../config/db');
+const { sequelize } = require('../config/sequelize');
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -26,6 +26,7 @@ const register = async (req, res) => {
       name,
       email,
       password,
+      isAdmin: false
     });
 
     if (user) {
@@ -33,7 +34,7 @@ const register = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        isAdmin: user.isAdmin,
         token: generateToken(user.id),
       });
     }
@@ -85,7 +86,7 @@ const login = async (req, res) => {
           id: user.id,
           name: user.name,
           email: user.email,
-          role: user.role,
+          isAdmin: user.isAdmin,
           token: token
         });
       } else {

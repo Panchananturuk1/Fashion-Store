@@ -32,7 +32,7 @@ if (fs.existsSync(routesDir)) {
 
 // Import models
 try {
-  require('./models/userModel');
+require('./models/userModel');
   console.log('User model loaded successfully');
 } catch (error) {
   console.error('Error loading user model:', error.message);
@@ -87,7 +87,7 @@ try {
     console.log(`PostgreSQL routes file exists: ${fs.existsSync(pgRoutesPath)}`);
     
     if (fs.existsSync(pgRoutesPath)) {
-      orderRoutes = require('./routes/orderRoutes-pg');
+    orderRoutes = require('./routes/orderRoutes-pg');
       console.log(`Using PostgreSQL order routes for ${dbType}`);
     } else {
       // Fall back to regular routes if PG version doesn't exist
@@ -106,8 +106,8 @@ try {
     console.log(`MySQL routes file exists: ${fs.existsSync(mysqlRoutesPath)}`);
     
     if (fs.existsSync(mysqlRoutesPath)) {
-      orderRoutes = require('./routes/orderRoutes');
-      console.log('Using MySQL order routes');
+    orderRoutes = require('./routes/orderRoutes');
+    console.log('Using MySQL order routes');
     } else {
       throw new Error('MySQL routes file does not exist');
     }
