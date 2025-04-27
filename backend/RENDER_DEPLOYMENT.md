@@ -1,95 +1,121 @@
-# Deploying to Render
+# Render Deployment with Supabase Integration
 
-This guide will walk you through deploying the Fashion Store backend to Render.com.
+This guide provides step-by-step instructions for deploying the Fashion Store backend to Render with Supabase as the database.
 
-## Prerequisites
+## 1. Prerequisites
 
-- A [Render](https://render.com) account
-- Your code pushed to a Git repository (GitHub, GitLab, etc.)
+- A Supabase account and project (already set up)
+- A Render account
+- This repository set up with Git
 
-## Manual Deployment
+## 2. Supabase Configuration
 
-### Step 1: Create a Web Service
+Ensure your Supabase project has the following settings:
 
-1. Log in to your Render dashboard
-2. Click **New** → **Web Service**
-3. Connect your Git repository
+1. Make sure PostgreSQL is properly configured in your Supabase project
+2. Note your connection string: `postgresql://postgres.[ref-id]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres`
+3. Note your Supabase URL and anon key from your project settings
+
+## 3. Setting Up Render
+
+### 3.1 Create a Web Service
+
+1. Log in to your Render account and go to the Dashboard
+2. Click on "New" and select "Web Service"
+3. Connect your GitHub repository
 4. Configure the service:
-   - **Name**: `fashion-store-api` (or your preferred name)
-   - **Root Directory**: `./backend` (if your backend is in a subdirectory)
-   - **Environment**: `Node`
+   - **Name**: `fashion-store-backend` (or your preferred name)
+   - **Root Directory**: `backend` (if your backend is in a subdirectory)
+   - **Runtime**: `Node`
    - **Build Command**: `npm install`
-   - **Start Command**: `node src/index.js`
-   - **Plan**: Free (or choose a paid plan for production)
+   - **Start Command**: `npm run start`
 
-### Step 2: Set Environment Variables
+### 3.2 Configure Environment Variables
 
 Add the following environment variables in the Render dashboard:
 
 ```
-DB_TYPE=postgres
-PORT=10000
-PG_HOST=[Your PostgreSQL Host]
-PG_USER=[Your PostgreSQL Username]
-PG_PASSWORD=[Your PostgreSQL Password]
-PG_DATABASE=fashion_store
-PG_PORT=5432
+DB_TYPE=supabase
 PG_SSL=true
-JWT_SECRET=[Your Secret Key for JWT]
 NODE_ENV=production
+SUPABASE_POSTGRES_URL=postgresql://postgres.sxnqargkpoojafyshwrc:Monumartinez@123@aws-0-ap-south-1.pooler.supabase.com:5432/postgres
+SUPABASE_URL=https://sxnqargkpoojafyshwrc.supabase.co
+SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4bnFhcmdrcG9vamFmeXNod3JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2NDYxNzksImV4cCI6MjA2MTIyMjE3OX0.QW47Gjhc_oHmxGjlGw2nvF5GTkYhCoy93ZqeT2GmLHY
+JWT_SECRET=HTZ2elD7PcYhXbNHUKdNqX8LZcSZlu0PHgzDiUAqdc21bNpINcEL23K2A7M2MKQKQpi539mJAm7AtAARVI3/4Q==
 ```
 
-### Step 3: Create a Database
+> **Note**: For security, use Render's secret environment variables for sensitive information.
 
-1. Click **New** → **PostgreSQL**
-2. Configure your database:
-   - **Name**: `fashion-store-db` (or your preferred name)
-   - **Database**: `fashion_store`
-   - **User**: Render will create one for you
-   - **Plan**: Free (or choose a paid plan for production)
-3. Once created, get the connection details from the dashboard
-4. Update your environment variables with these connection details
+## 4. Database Initialization
 
-### Step 4: Initialize the Database
+You have two options to initialize your database:
 
-After deployment, you'll need to set up your database tables. You can do this in several ways:
+### Option 1: One-time Setup Job
 
-1. **One-time script**: Connect to your Render service via SSH and run `node src/utils/rebuildProductsTable.js`
-2. **Scheduled job**: Create a one-time job in Render to run this script
-3. **Manual setup**: Use a PostgreSQL client to connect to your database and run the SQL commands
+Create a one-time job in Render:
 
-## Blueprint Deployment (One-Click)
+1. Go to your Render dashboard and click "New" > "Background Job"
+2. Configure the job:
+   - **Name**: `fashion-store-db-init`
+   - **Root Directory**: `backend` (same as your web service)
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm run supabase:init`
+   - **Schedule**: One-time job
+3. Set the same environment variables as your web service (see section 3.2)
+4. Create and run the job
 
-For easier deployment, we've included a `render.yaml` file in the repository root. This allows for one-click deployment:
+### Option 2: Initialize from Your Local Machine
 
-1. Fork this repository
-2. In your Render dashboard, go to **Blueprints**
-3. Click **New Blueprint Instance**
-4. Connect to your forked repository
-5. Render will automatically set up the web service, database, and initialization job
+If you prefer to initialize from your local environment:
 
-## Testing Locally with Render Configuration
-
-To test your application with the same configuration as Render:
-
-1. Run the included PowerShell script:
-   ```
-   ./test-render-config.ps1
+1. Clone the repository to your local machine
+2. Navigate to the backend directory
+3. Create a `.env` file with the same environment variables listed above
+4. Run the initialization command:
+   ```bash
+   npm run supabase:init
    ```
 
-2. This script will:
-   - Set up the environment variables
-   - Check for database connectivity
-   - Start the server on port 10000
+## 5. Verify Deployment
 
-## Troubleshooting
+After deploying, check that everything is working correctly:
 
-- **Connection Issues**: Make sure your database connection strings are correct
-- **Cold Starts**: Free tier services spin down after inactivity, so the first request may be slow
-- **Logs**: Check the Render logs for any error messages
-- **Database Setup**: Ensure your database tables are properly created
+1. Open your web service URL in a browser
+2. You should see the message "E-commerce API is running..."
+3. Test an API endpoint, for example:
+   ```
+   GET https://your-render-service.onrender.com/api/products
+   ```
+4. Check the Render logs for any database connection issues
 
-## Additional Resources
+## 6. Changing Database Configuration
 
-- [Render Node.js Documentation](https://render.com/docs/deploy-node-express-app)
-- [Render PostgreSQL Documentation](https://render.com/docs/databases) 
+If you need to change the database configuration later:
+
+1. Update the environment variables in the Render dashboard
+2. Restart your web service
+
+## 7. Troubleshooting
+
+If you encounter issues:
+
+1. **Database Connection Errors**:
+   - Check that your Supabase connection string is correct
+   - Ensure SSL is enabled with `PG_SSL=true`
+   - Verify your Supabase project is active
+
+2. **Missing Tables**:
+   - Run the database initialization job again
+   - Check the Supabase SQL editor to verify table creation
+
+3. **Application Errors**:
+   - Check the Render logs for detailed error messages
+   - Verify all environment variables are set correctly
+
+## 8. Auto-Deploy with Git
+
+Render automatically deploys when you push changes to your repository. To ensure smooth deployments:
+
+1. Always test changes locally before pushing
+2. Use environment-specific configuration to avoid breaking the production environment
+3. Check Render logs after each deployment 

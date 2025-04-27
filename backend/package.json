@@ -16,7 +16,10 @@
     "view:pg": "node src/utils/viewPgData.js",
     "add-data:pg": "node src/utils/addMoreSampleData.js",
     "render-start": "node render-start.js",
-    "render-init": "node render-init.js"
+    "render-init": "node render-init.js",
+    "supabase:test": "node setup-supabase-render.js",
+    "supabase:init": "node setup-supabase-tables.js",
+    "render:supabase": "node render-supabase-init.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
