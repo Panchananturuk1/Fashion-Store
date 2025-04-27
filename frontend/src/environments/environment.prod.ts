@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  // Replace this with your backend URL once deployed to Render
-  apiUrl: 'https://your-backend-api-url.onrender.com/api'
+  // Backend deployed to Render with Supabase integration
+  apiUrl: 'https://fashion-store-backend-pymz.onrender.com/api'
 }; 
