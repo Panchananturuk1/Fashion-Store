@@ -1,6 +1,6 @@
 # E-Commerce Website
-Link: http://ecom-fashion-store.s3-website-us-east-1.amazonaws.com/
-Link-2: https://fashion-store-qh0x.onrender.com/
+Link-1(AWS S3): https://fashion-store-qh0x.onrender.com/
+Link-2(Render): http://ecom-fashion-store.s3-website-us-east-1.amazonaws.com/
 A full-stack e-commerce platform built with Node.js, Express, MySQL, and Angular. This project features a modern, responsive design with a comprehensive product catalog, user authentication, and shopping cart functionality.
 
 ## Features
