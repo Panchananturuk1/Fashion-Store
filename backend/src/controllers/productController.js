@@ -22,13 +22,22 @@ const mapProductFields = (product) => {
   if ('created_at' in product) mappedProduct.createdAt = product.created_at;
   if ('updated_at' in product) mappedProduct.updatedAt = product.updated_at;
   
+  // Handle subcategory mapping (snake_case to camelCase)
+  if ('subcategory' in product) mappedProduct.subCategory = product.subcategory;
+  
   // Parse JSON strings to arrays if needed
   if (typeof product.size === 'string') {
-    try { mappedProduct.size = JSON.parse(product.size); } catch (e) {}
+    try { mappedProduct.size = JSON.parse(product.size); } catch (e) {
+      console.warn('Error parsing size JSON:', e);
+      mappedProduct.size = product.size;
+    }
   }
   
   if (typeof product.color === 'string') {
-    try { mappedProduct.color = JSON.parse(product.color); } catch (e) {}
+    try { mappedProduct.color = JSON.parse(product.color); } catch (e) {
+      console.warn('Error parsing color JSON:', e);
+      mappedProduct.color = product.color;
+    }
   }
   
   return mappedProduct;
@@ -157,36 +166,77 @@ const getProductById = async (req, res) => {
 // Create a new product
 const createProduct = async (req, res) => {
   try {
+    console.log('createProduct called with payload:', JSON.stringify(req.body));
+    
     const { 
-      name, description, price, category, subcategory, 
+      name, description, price, category, subcategory, subCategory, 
       imageUrl, size, color, inStock, featured, rating, numReviews 
     } = req.body;
     
-    // Prepare data, stringify arrays if needed
-    const sizeStr = Array.isArray(size) ? JSON.stringify(size) : size;
-    const colorStr = Array.isArray(color) ? JSON.stringify(color) : color;
+    // Handle both subcategory and subCategory field names
+    const finalSubcategory = subcategory || subCategory || '';
+    
+    // Prepare data for arrays
+    let sizeData = size;
+    let colorData = color;
+    
+    // Ensure size and color are properly formatted
+    if (Array.isArray(size)) {
+      sizeData = isPostgres ? JSON.stringify(size) : size;
+    } else if (typeof size === 'string' && size.trim().startsWith('[')) {
+      // If it's already a JSON string, keep it as is for Postgres
+      sizeData = isPostgres ? size : JSON.parse(size);
+    }
+    
+    if (Array.isArray(color)) {
+      colorData = isPostgres ? JSON.stringify(color) : color;
+    } else if (typeof color === 'string' && color.trim().startsWith('[')) {
+      // If it's already a JSON string, keep it as is for Postgres
+      colorData = isPostgres ? color : JSON.parse(color);
+    }
+    
+    console.log('Processed data:', {
+      name, description, price, category,
+      subcategory: finalSubcategory,
+      size: sizeData,
+      color: colorData
+    });
     
     let product;
     
     if (isPostgres) {
       // Use raw query for PostgreSQL
-      const result = await sequelize.query(
-        `INSERT INTO products 
-         (name, description, price, category, subcategory, image_url, 
-          size, color, in_stock, featured, rating, num_reviews) 
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
-         RETURNING *`,
-        {
-          replacements: [
-            name, description, price, category, subcategory || '', imageUrl,
-            sizeStr, colorStr, inStock !== undefined ? inStock : true, 
-            featured || false, rating || 0, numReviews || 0
-          ],
-          type: sequelize.QueryTypes.INSERT
-        }
-      );
+      console.log('Using PostgreSQL insertion with data:', {
+        name, description, price, category, subcategory: finalSubcategory,
+        imageUrl, size: sizeData, color: colorData
+      });
       
-      product = mapProductFields(result[0][0]);
+      try {
+        const result = await sequelize.query(
+          `INSERT INTO products 
+           (name, description, price, category, subcategory, image_url, 
+            size, color, in_stock, featured, rating, num_reviews) 
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
+           RETURNING *`,
+          {
+            bind: [
+              name, description, price, category, finalSubcategory, imageUrl,
+              sizeData, colorData, inStock !== undefined ? inStock : true, 
+              featured || false, rating || 0, numReviews || 0
+            ],
+            type: sequelize.QueryTypes.INSERT
+          }
+        );
+        
+        if (result && result[0] && result[0][0]) {
+          product = mapProductFields(result[0][0]);
+        } else {
+          throw new Error('Failed to retrieve inserted product data');
+        }
+      } catch (pgError) {
+        console.error('PostgreSQL insertion error:', pgError);
+        throw pgError;
+      }
     } else {
       // Use Sequelize for MySQL
       const productData = {
@@ -194,10 +244,10 @@ const createProduct = async (req, res) => {
         description,
         price,
         category,
-        subcategory: subcategory || '',
+        subCategory: finalSubcategory,  // Use camelCase for MySQL
         imageUrl,
-        size: sizeStr,
-        color: colorStr,
+        size: sizeData,
+        color: colorData,
         inStock: inStock !== undefined ? inStock : true,
         featured: featured || false,
         rating: rating || 0,
@@ -210,7 +260,12 @@ const createProduct = async (req, res) => {
     res.status(201).json(product);
   } catch (error) {
     console.error('Error creating product:', error);
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ 
+      message: 'Server Error', 
+      error: error.message,
+      stack: error.stack
+    });
   }
 };
 
@@ -384,7 +439,7 @@ const createDummyProducts = async (req, res) => {
             size, color, in_stock, featured, rating, num_reviews) 
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
           {
-            replacements: [
+            bind: [
               product.name, product.description, product.price, 
               product.category, product.subcategory, product.imageUrl,
               product.size, product.color, true, product.featured, 
