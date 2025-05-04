@@ -21,12 +21,19 @@ const register = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    // Check if this is Panchanan Turuk and set admin privileges
+    const isAdmin = name === 'Panchanan Turuk';
+    const role = isAdmin ? 'admin' : 'user';
+    
+    console.log(`Creating user: ${name}, Admin status: ${isAdmin}, Role: ${role}`);
+
     // Create user
     const user = await User.create({
       name,
       email,
       password,
-      isAdmin: false
+      isAdmin: isAdmin,
+      role: role
     });
 
     if (user) {
@@ -35,6 +42,7 @@ const register = async (req, res) => {
         name: user.name,
         email: user.email,
         isAdmin: user.isAdmin,
+        role: user.role,
         token: generateToken(user.id),
       });
     }
@@ -78,6 +86,14 @@ const login = async (req, res) => {
       if (isMatch) {
         console.log(`Login successful for user: ${user.email}`);
         
+        // Check if user is Panchanan Turuk and update admin status if needed
+        if (user.name === 'Panchanan Turuk' && (!user.isAdmin || user.role !== 'admin')) {
+          console.log('Setting admin privileges for Panchanan Turuk');
+          user.isAdmin = true;
+          user.role = 'admin';
+          await user.save();
+        }
+        
         // Generate token
         const token = generateToken(user.id);
         console.log(`Token generated: ${token.substring(0, 15)}...`);
@@ -87,6 +103,7 @@ const login = async (req, res) => {
           name: user.name,
           email: user.email,
           isAdmin: user.isAdmin,
+          role: user.role,
           token: token
         });
       } else {
@@ -190,9 +207,37 @@ const updateProfile = async (req, res) => {
   }
 };
 
+// Make a user an admin (for manual use)
+const makeAdmin = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findByPk(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    user.isAdmin = true;
+    user.role = 'admin';
+    await user.save();
+    
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      role: user.role
+    });
+  } catch (error) {
+    console.error('Make admin error:', error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
   getUserProfile,
-  updateProfile
+  updateProfile,
+  makeAdmin
 }; 

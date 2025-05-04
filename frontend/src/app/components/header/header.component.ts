@@ -30,6 +30,11 @@ export class HeaderComponent implements OnInit {
     return this.authService.isLoggedIn();
   }
 
+  isAdmin(): boolean {
+    const currentUser = this.authService.currentUserValue;
+    return currentUser && (currentUser.isAdmin || currentUser.role === 'admin');
+  }
+
   logout(event: Event): void {
     event.preventDefault();
     this.authService.logout();

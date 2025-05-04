@@ -1,14 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Product } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-add-product',
   templateUrl: './add-product.component.html',
   styleUrls: ['./add-product.component.css']
 })
-export class AddProductComponent {
+export class AddProductComponent implements OnInit {
   product: Partial<Product> = {
     name: '',
     description: '',
@@ -32,10 +33,18 @@ export class AddProductComponent {
 
   constructor(
     private productService: ProductService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Check if the user is an admin, if not redirect to home
+    const currentUser = this.authService.currentUserValue;
+    if (!currentUser || !(currentUser.isAdmin || currentUser.role === 'admin')) {
+      console.log('Unauthorized access to Add Product page. Redirecting to home.');
+      this.router.navigate(['/']);
+    }
+  }
 
   onSubmit(): void {
     if (!this.product.size || !this.product.color) {

@@ -29,6 +29,15 @@ npm start
 
 The frontend will be available at http://localhost:4200.
 
+## Admin Access Control
+
+The application has special admin access controls:
+
+1. Only users with admin privileges can add products
+2. Only "Panchanan Turuk" has admin access by default
+3. The cart button is only displayed to logged-in users
+4. The "Add Product" link is only visible to admin users
+
 ## Configuration Files
 
 - `env.template`: Contains the Supabase configuration settings
@@ -41,4 +50,5 @@ If you encounter issues with adding products:
 
 1. Make sure the frontend is configured to connect to the correct backend URL in `frontend/src/environments/environment.ts`
 2. Ensure the backend is using the Supabase configuration by starting it with `start-supabase.js`
-3. Check the browser console and backend server logs for any error messages 
+3. Check the browser console and backend server logs for any error messages
+4. Verify that you're logged in as a user with admin privileges 

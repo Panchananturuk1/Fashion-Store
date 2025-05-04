@@ -16,13 +16,14 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/products/women" routerLinkActive="active">Women</a>
         </li>
-        <li class="nav-item">
+        <!-- Only show Add Product link for admin users -->
+        <li class="nav-item" *ngIf="isAdmin()">
           <a class="nav-link" routerLink="/add-product" routerLinkActive="active">Add Product</a>
         </li>
       </ul>
       <ul class="navbar-nav">
-        <!-- Cart Icon -->
-        <li class="nav-item">
+        <!-- Cart Icon - only shown when logged in -->
+        <li class="nav-item" *ngIf="isLoggedIn()">
           <a class="nav-link position-relative" routerLink="/cart" routerLinkActive="active">
             <i class="bi bi-cart-fill"></i> Cart
             <span *ngIf="cartItemCount > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -42,7 +43,8 @@
             <li><a class="dropdown-item" routerLink="/profile">My Profile</a></li>
             <li><a class="dropdown-item" routerLink="/orders">My Orders</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" routerLink="/dashboard">Dashboard</a></li>
+            <!-- Only show Dashboard for admin -->
+            <li *ngIf="isAdmin()"><a class="dropdown-item" routerLink="/dashboard">Dashboard</a></li>
             <li><a class="dropdown-item" href="#" (click)="logout($event)">Logout</a></li>
           </ul>
         </li>
