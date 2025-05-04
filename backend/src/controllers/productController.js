@@ -15,26 +15,24 @@ const mapProductFields = (product) => {
 
   const mappedProduct = { ...product };
   
-  // Map snake_case to camelCase for PostgreSQL
-  if ('image_url' in product) mappedProduct.imageUrl = product.image_url;
-  if ('in_stock' in product) mappedProduct.inStock = product.in_stock;
-  if ('num_reviews' in product) mappedProduct.numReviews = product.num_reviews;
-  if ('created_at' in product) mappedProduct.createdAt = product.created_at;
-  if ('updated_at' in product) mappedProduct.updatedAt = product.updated_at;
-  
-  // Handle subcategory mapping (snake_case to camelCase)
-  if ('subcategory' in product) mappedProduct.subCategory = product.subcategory;
+  // For PostgreSQL, product fields are already in camelCase
+  // Normally we would map snake_case to camelCase, but the DB is using camelCase column names
+  // No need to map snake_case fields like image_url to camelCase
   
   // Parse JSON strings to arrays if needed
   if (typeof product.size === 'string') {
-    try { mappedProduct.size = JSON.parse(product.size); } catch (e) {
+    try { 
+      mappedProduct.size = JSON.parse(product.size); 
+    } catch (e) {
       console.warn('Error parsing size JSON:', e);
       mappedProduct.size = product.size;
     }
   }
   
   if (typeof product.color === 'string') {
-    try { mappedProduct.color = JSON.parse(product.color); } catch (e) {
+    try { 
+      mappedProduct.color = JSON.parse(product.color); 
+    } catch (e) {
       console.warn('Error parsing color JSON:', e);
       mappedProduct.color = product.color;
     }
@@ -195,9 +193,12 @@ const createProduct = async (req, res) => {
       colorData = isPostgres ? color : JSON.parse(color);
     }
     
+    // Get current timestamp for created/updated fields
+    const now = new Date();
+    
     console.log('Processed data:', {
       name, description, price, category,
-      subcategory: finalSubcategory,
+      subCategory: finalSubcategory,
       size: sizeData,
       color: colorData
     });
@@ -207,22 +208,23 @@ const createProduct = async (req, res) => {
     if (isPostgres) {
       // Use raw query for PostgreSQL
       console.log('Using PostgreSQL insertion with data:', {
-        name, description, price, category, subcategory: finalSubcategory,
+        name, description, price, category, subCategory: finalSubcategory,
         imageUrl, size: sizeData, color: colorData
       });
       
       try {
         const result = await sequelize.query(
           `INSERT INTO products 
-           (name, description, price, category, subcategory, image_url, 
-            size, color, in_stock, featured, rating, num_reviews) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
+           (name, description, price, category, "subCategory", "imageUrl", 
+            size, color, "inStock", featured, rating, "numReviews", "createdAt", "updatedAt") 
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
            RETURNING *`,
           {
             bind: [
               name, description, price, category, finalSubcategory, imageUrl,
               sizeData, colorData, inStock !== undefined ? inStock : true, 
-              featured || false, rating || 0, numReviews || 0
+              featured || false, rating || 0, numReviews || 0,
+              now, now
             ],
             type: sequelize.QueryTypes.INSERT
           }
@@ -251,7 +253,9 @@ const createProduct = async (req, res) => {
         inStock: inStock !== undefined ? inStock : true,
         featured: featured || false,
         rating: rating || 0,
-        numReviews: numReviews || 0
+        numReviews: numReviews || 0,
+        createdAt: now,
+        updatedAt: now
       };
       
       product = await Product.create(productData);
@@ -289,6 +293,9 @@ const createDummyProducts = async (req, res) => {
         message: 'Products already exist. Please use the regular product creation endpoint to add new products.' 
       });
     }
+    
+    // Get current timestamp for created/updated fields
+    const now = new Date();
     
     // Men's clothing dummy data
     const menProducts = [
@@ -435,15 +442,15 @@ const createDummyProducts = async (req, res) => {
       for (const product of dummyProducts) {
         await sequelize.query(
           `INSERT INTO products 
-           (name, description, price, category, subcategory, image_url, 
-            size, color, in_stock, featured, rating, num_reviews) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+           (name, description, price, category, "subCategory", "imageUrl", 
+            size, color, "inStock", featured, rating, "numReviews", "createdAt", "updatedAt") 
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
           {
             bind: [
               product.name, product.description, product.price, 
               product.category, product.subcategory, product.imageUrl,
               product.size, product.color, true, product.featured, 
-              product.rating, product.numReviews
+              product.rating, product.numReviews, now, now
             ],
             type: sequelize.QueryTypes.INSERT
           }
@@ -451,7 +458,13 @@ const createDummyProducts = async (req, res) => {
       }
     } else {
       // Use Sequelize bulkCreate for MySQL
-      await Product.bulkCreate(dummyProducts);
+      // Add createdAt and updatedAt to all products
+      const productsWithTimestamps = dummyProducts.map(product => ({
+        ...product,
+        createdAt: now,
+        updatedAt: now
+      }));
+      await Product.bulkCreate(productsWithTimestamps);
     }
     
     res.status(201).json({ 
