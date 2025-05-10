@@ -26,31 +26,27 @@ export class ProductDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Get the product ID from the route parameters
     this.route.params.subscribe(params => {
-      const productId = parseInt(params['id'], 10);
-      if (!isNaN(productId)) {
-        this.loadProduct(productId);
-      } else {
-        this.error = 'Invalid product ID';
-        this.loading = false;
-      }
+      const id = params['id'];
+      this.getProduct(parseInt(id, 10));
     });
   }
 
-  loadProduct(id: number): void {
+  getProduct(id: number): void {
     this.loading = true;
     this.error = null;
 
     this.productService.getProduct(id).subscribe({
-      next: (response) => {
-        this.product = response;
+      next: (product) => {
+        this.product = product;
         this.loading = false;
-        // Set default selections
-        if (this.product.color.length > 0) {
+        
+        // Initialize color and size if available
+        if (this.product && this.product.color && this.product.color.length > 0) {
           this.selectedColor = this.product.color[0];
         }
-        if (this.product.size.length > 0) {
+        
+        if (this.product && this.product.size && this.product.size.length > 0) {
           this.selectedSize = this.product.size[0];
         }
       },

@@ -86,7 +86,14 @@ export class CartService {
     return new Observable(observer => {
       this.getCartItems().subscribe(items => {
         const total = items.reduce(
-          (sum, item) => sum + (item.product.price * item.quantity), 0
+          (sum, item) => {
+            // Ensure price is a number for calculation
+            const price = typeof item.product.price === 'string' 
+              ? parseFloat(item.product.price) 
+              : item.product.price;
+            
+            return sum + (price * item.quantity);
+          }, 0
         );
         observer.next(total);
       });

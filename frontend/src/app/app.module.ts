@@ -27,7 +27,6 @@ import { OrderService } from './services/order.service';
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
     ProductListComponent,
     ProductDetailComponent,
     CartComponent,
@@ -44,6 +43,7 @@ import { OrderService } from './services/order.service';
     AppRoutingModule,
     RouterModule,
     HeaderComponent,
+    HomeComponent,
     LoginComponent,
     RegisterComponent,
     ProfileComponent,

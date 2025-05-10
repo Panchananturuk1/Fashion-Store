@@ -21,9 +21,9 @@ import { Component } from '@angular/core';
         </div>
         <div class="footer-section">
           <h3>Contact Us</h3>
-          <p>Email: support@example.com</p>
-          <p>Phone: (123) 456-7890</p>
-          <p>Address: 123 Main St, City, Country</p>
+          <p>Email: pturuk123@gmail.com</p>
+          <p>Phone: +91-8596957901</p>
+          <p>Address: Nehru Nagar Koraput, Odisha, India</p>
         </div>
       </div>
       <div class="footer-bottom">

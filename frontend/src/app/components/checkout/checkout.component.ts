@@ -95,7 +95,14 @@ export class CheckoutComponent implements OnInit {
     // Get cart items and total
     this.cartService.getCartItems().subscribe(items => {
       this.cartItems = items;
-      this.total = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+      this.total = items.reduce((sum, item) => {
+        // Ensure price is a number for calculation
+        const price = typeof item.product.price === 'string' 
+          ? parseFloat(item.product.price) 
+          : item.product.price;
+        
+        return sum + (price * item.quantity);
+      }, 0);
     });
 
     // Pre-fill user data if logged in

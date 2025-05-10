@@ -3,16 +3,19 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  category: 'men' | 'women';
-  subCategory: string;
+  category: 'men' | 'women' | string;
+  subCategory?: string;
   imageUrl: string;
-  size: string[];
-  color: string[];
-  inStock: boolean;
-  featured: boolean;
-  rating: number;
-  numReviews: number;
+  size?: string[];
+  color?: string[];
+  inStock?: boolean;
+  featured?: boolean;
+  rating?: number;
+  numReviews?: number;
   createdAt?: string;
   updatedAt?: string;
   collectionImage?: string; // URL for the collection image
+  isNew?: boolean; // Whether to show the "New" badge
+  sale?: boolean; // Whether the product is on sale
+  originalPrice?: number | null;
 } 
